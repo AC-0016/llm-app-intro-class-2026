@@ -17,7 +17,7 @@ python one_shot.py
 ```
 
 第2回以外はポート8000番をブラウザで開きます。サーバー停止はCtrl+C。
-Pythonコードや.envを変更したら停止して再起動、JSを変更したら画面を再読み込みします。
+Pythonコードや環境変数を変更したら停止して再起動、JSを変更したら画面を再読み込みします。
 
 ## 演習
 
@@ -33,8 +33,16 @@ Pythonコードや.envを変更したら停止して再起動、JSを変更し�
 ## デモとAPI
 
 初期設定はDEMO_MODE=trueです。実際の生成・意味検索・関数選択は行いません。
-APIを使う場合は各フォルダで `cp .env.example .env`、DEMO_MODE=falseに変更します。
-OPENAI_API_KEYはSecretsか.envに設定します。環境変数を優先します。
+毎回の授業開始時に、アプリを起動するターミナルで次を実行します。キーの入力は画面にもコマンド履歴にも残りません。
+
+```bash
+read -rsp "APIキー: " OPENAI_API_KEY; echo
+export OPENAI_API_KEY
+export DEMO_MODE=false
+```
+
+同じターミナルからアプリを起動してください。新しいターミナルでは再設定が必要です。終了時はサーバーをCtrl+Cで停止し、`unset OPENAI_API_KEY DEMO_MODE` を実行してターミナルを閉じます。キーは `.env`、Codespaces Secrets、シェルの設定ファイルに保存しません。
+
 生成モデルはgpt-6-luna、reasoning.effort=noneです。
 第2・4回の穴埋めはAPIモードの分岐なので、デモで動くだけでは実装確認になりません。
 意味検索はDEMO_MODEやEmbeddingモデルを変えたら `python build_index.py` を再実行します。

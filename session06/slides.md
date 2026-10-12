@@ -33,6 +33,11 @@ Embeddingと類似度を理解する
 | 計算の穴埋め・検索の比較 |
 | 更新・費用・提出 |
 
+API利用時は毎回、起動するターミナルで非表示入力：
+`read -rsp "APIキー: " OPENAI_API_KEY; echo`
+`export OPENAI_API_KEY DEMO_MODE=false`
+終了時は停止して `unset OPENAI_API_KEY DEMO_MODE`。
+
 ---
 
 ## 言い方が違う質問
@@ -295,7 +300,7 @@ python build_index.py
 python main.py
 ```
 
-APIモードは `.env` または環境変数を先に設定します。
+APIモードは毎回、同じターミナルで環境変数を先に設定します。
 `build_index.py` は、APIモードなら各断片を外部へ送ります。
 初回は資料数を確認し、講師の案内に従って実行します。
 

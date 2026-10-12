@@ -21,9 +21,16 @@ Codespacesのポート8000番を開きます。終了はCtrl+C。ポートは非
 
 ## APIモード
 
-`cp .env.example .env` で設定をコピーし、`DEMO_MODE=false` にします。
-`OPENAI_API_KEY` はCodespaces Secretsに登録するか、`.env` に設定します。
-OSの環境変数が.envより優先します。設定変更後はサーバーを再起動します。
+毎回の授業開始時に、アプリを起動するターミナルで次を実行します。キーの入力は画面にもコマンド履歴にも残りません。
+
+```bash
+read -rsp "APIキー: " OPENAI_API_KEY; echo
+export OPENAI_API_KEY
+export DEMO_MODE=false
+```
+
+同じターミナルからアプリを起動してください。新しいターミナルでは再設定が必要です。終了時はサーバーをCtrl+Cで停止し、`unset OPENAI_API_KEY DEMO_MODE` を実行してターミナルを閉じます。キーは `.env`、Codespaces Secrets、シェルの設定ファイルに保存しません。
+設定変更後はサーバーを再起動します。
 モデルは **gpt-6-luna**。Responses API、reasoning.effort=none、最大出力600トークンを使います。
 意味検索のベクトル作成だけは **text-embedding-3-small** を使います。
 APIモードに変えたら `python build_index.py` でベクトルを作り直します。

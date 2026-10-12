@@ -33,6 +33,11 @@ footer: LLMアプリケーション開発 2026
 | fetchの実装と動作確認 |
 | エラー確認・提出 |
 
+API利用時は毎回、起動するターミナルで非表示入力：
+`read -rsp "APIキー: " OPENAI_API_KEY; echo`
+`export OPENAI_API_KEY DEMO_MODE=false`
+終了時は停止して `unset OPENAI_API_KEY DEMO_MODE`。
+
 ---
 
 ## 通信の2段階

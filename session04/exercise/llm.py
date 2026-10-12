@@ -7,7 +7,7 @@ from settings import DEMO_MODE, MODEL
 def make_client():
     # APIキーはOSの環境変数からSDKが読み取る。
     if not os.getenv('OPENAI_API_KEY'):
-        raise ValueError('OPENAI_API_KEYをCodespaces Secretsか.envに設定してください。')
+        raise ValueError('このターミナルでOPENAI_API_KEY環境変数を設定してから起動してください。')
     return OpenAI(timeout=30.0, max_retries=0)
 
 

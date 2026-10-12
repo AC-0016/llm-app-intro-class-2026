@@ -33,6 +33,11 @@ LLMの提案と、Pythonによる実行を区別する。
 | SQL実装と検証 |
 | 制限・振り返り |
 
+API利用時は毎回、起動するターミナルで非表示入力：
+`read -rsp "APIキー: " OPENAI_API_KEY; echo`
+`export OPENAI_API_KEY DEMO_MODE=false`
+終了時は停止して `unset OPENAI_API_KEY DEMO_MODE`。
+
 ---
 
 ## 文書検索と構造化データ

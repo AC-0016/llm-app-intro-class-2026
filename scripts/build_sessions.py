@@ -33,7 +33,7 @@ def make_stage(destination, stage):
         return  # 初回は完成品を観察する。コードの実装は求めない。
     if stage == 2:
         for path in list(destination.iterdir()):
-            if path.name not in ['settings.py', 'llm.py', 'one_shot.py', '.env.example']:
+            if path.name not in ['settings.py', 'llm.py', 'one_shot.py']:
                 if path.is_dir():
                     shutil.rmtree(path)
                 else:

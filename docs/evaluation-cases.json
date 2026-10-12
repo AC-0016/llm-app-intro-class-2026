@@ -6,7 +6,7 @@
   {"id":5,"question":"SQLインジェクションを防ぐには？","search_text":"SQLインジェクション","expected_sources":["01-web.md#SQLインジェクション対策"],"expected":"?と別引数を使い、SQLへ値を連結しない"},
   {"id":6,"question":"第7回の提出物は？","search_text":"第7回 提出物","expected_sources":["02-course.md#第7回の提出物"],"expected":"教材用の架空案内であることを踏まえ、2つのURLと説明文を回答する"},
   {"id":7,"question":"来年度の試験日は何月何日？","search_text":"試験日","expected_sources":[],"expected":"具体的な日付を捏造せず、資料から確認できないと伝える"},
-  {"id":8,"question":"APIキーをどこに保管する？","search_text":"APIキー 保管","expected_sources":["03-api.md#APIキーの保管"],"expected":"サーバーの環境変数やSecrets。JSやGitに含めない"},
+  {"id":8,"question":"APIキーをどこに保管する？","search_text":"APIキー 保管","expected_sources":["03-api.md#APIキーの保管"],"expected":"毎回起動するターミナルの環境変数に設定し、終了時に解除する。ファイルやSecretsに保存せず、JSやGitに含めない"},
   {"id":9,"question":"資料を更新したら何をする？","search_text":"資料 更新","expected_sources":["02-course.md#教材の資料更新"],"expected":"init_db.py、意味検索を使う場合build_index.pyを実行する"},
   {"id":10,"question":"未提出の課題を教えて","mode":"tools","expected_sources":[],"expected":"初期DBでは第5回の検索比較と第8回の評価シート。実在の学生の情報ではない"}
 ]

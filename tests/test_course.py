@@ -171,3 +171,29 @@ def test_api_errors_and_incomplete(load_app, monkeypatch):
     result = TestClient(main.app).post('/api/ask',json={'question':'a','mode':'plain'})
     assert result.status_code == 504
     assert 'example.test' not in result.text
+
+
+@pytest.mark.parametrize('relative', ['sample-app', 'your-app'] + [
+    f'session{i:02}/{kind}' for i in range(1, 9)
+    for kind in ['exercise', 'solution']])
+def test_settings_use_only_session_environment(tmp_path, monkeypatch, relative):
+    import runpy
+    directory = tmp_path / 'app'
+    directory.mkdir()
+    shutil.copy(ROOT / relative / 'settings.py', directory / 'settings.py')
+    (directory / '.env').write_text(
+        'OPENAI_API_KEY=file-key\nDEMO_MODE=false\nOPENAI_MODEL=file-model\n')
+    monkeypatch.delenv('OPENAI_API_KEY', raising=False)
+    monkeypatch.delenv('DEMO_MODE', raising=False)
+    monkeypatch.delenv('OPENAI_MODEL', raising=False)
+    settings = runpy.run_path(str(directory / 'settings.py'))
+    assert settings['DEMO_MODE'] is True
+    assert settings['MODEL'] == 'gpt-6-luna'
+    assert settings['os'].getenv('OPENAI_API_KEY') is None
+    monkeypatch.setenv('OPENAI_API_KEY', 'session-key')
+    monkeypatch.setenv('DEMO_MODE', 'false')
+    monkeypatch.setenv('OPENAI_MODEL', 'session-model')
+    settings = runpy.run_path(str(directory / 'settings.py'))
+    assert settings['DEMO_MODE'] is False
+    assert settings['MODEL'] == 'session-model'
+    assert settings['os'].getenv('OPENAI_API_KEY') == 'session-key'

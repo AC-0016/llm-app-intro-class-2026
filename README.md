@@ -66,14 +66,17 @@ VS Codeの「ポート」タブから8000番を開きます。**可視性はPriv
 生成・関数選択は **gpt-6-luna**、Responses APIを使用します。
 推論設定は `reasoning={'effort':'none'}`。Embeddingには **text-embedding-3-small** を使います。
 
-1. 講師指定のAPI利用環境と予算を確認する。
-2. `OPENAI_API_KEY` をCodespaces Secretsに登録し、対象リポジトリを許可する。
-3. Codespacesを停止・再開する。
-4. 実行するアプリのフォルダで `cp .env.example .env`。
-5. `.env` の `DEMO_MODE=false` に変更し、サーバーを起動し直す。
+講師指定のAPI利用環境と予算を確認してください。
+毎回の授業開始時に、アプリを起動するターミナルで次を実行します。キーの入力は画面にもコマンド履歴にも残りません。
 
-Secretsを使わない場合は、キーを.envだけに書きます。**環境変数を.envより優先します。**
-.env、キー、DBはGit管理しません。キーが漏れたら無効化・再発行します。
+```bash
+read -rsp "APIキー: " OPENAI_API_KEY; echo
+export OPENAI_API_KEY
+export DEMO_MODE=false
+```
+
+同じターミナルからアプリを起動してください。新しいターミナルでは再設定が必要です。終了時はサーバーをCtrl+Cで停止し、`unset OPENAI_API_KEY DEMO_MODE` を実行してターミナルを閉じます。キーは `.env`、Codespaces Secrets、シェルの設定ファイルに保存しません。
+設定変更後はサーバーを起動し直します。キー、DBはGit管理しません。キーが漏れたら無効化・再発行します。
 使用モデルの可否と利用料金は、開講時に講師が確認してください。
 
 ### デモでできること・できないこと
@@ -94,7 +97,7 @@ Secretsを使わない場合は、キーを.envだけに書きます。**環境�
 |---|---|
 | ModuleNotFoundError | `.venv` を有効化。ルートで `python -m pip install -r requirements-dev.txt` |
 | ポートが使用中 | 別のターミナルのサーバーをCtrl+Cで停止 |
-| 変更が反映されない | Python/.envは再起動、JSはブラウザ再読み込み |
+| 変更が反映されない | Python/環境変数は再起動、JSはブラウザ再読み込み |
 | TODOエラー | 指定箇所を実装し、仮のraise/throwを削除 |
 | ベクトルがない・モデルが違う | 資料登録後、現在のモードで `python build_index.py` |
 | 検索結果0件 | キーワードは「SQLite 保存」のように空白で区切る |

@@ -33,6 +33,11 @@ footer: LLMアプリケーション開発 2026
 評価と運用を一緒に扱う回です。
 キー管理、表示、入力検証は既習事項として再確認します。
 
+API利用時は毎回、起動するターミナルで非表示入力：
+`read -rsp "APIキー: " OPENAI_API_KEY; echo`
+`export OPENAI_API_KEY DEMO_MODE=false`
+終了時は停止して `unset OPENAI_API_KEY DEMO_MODE`。
+
 ---
 
 ## 動くことと役に立つこと
