@@ -1,5 +1,6 @@
 """講師用。完成版をコピーし、未習の機能を削って各回を作る。
 学生が編集したexerciseを上書きするため、--replaceを明示した場合だけ実行する。
+sample-appはAPI専用のため、再生成するコピーにもデモモードは含まれない。
 """
 import argparse
 import ast

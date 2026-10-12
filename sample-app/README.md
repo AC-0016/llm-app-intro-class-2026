@@ -5,35 +5,28 @@ exerciseはさらに学習箇所をコメントアウトしています。共有
 
 ## 起動
 
-リポジトリのルートで仮想環境を有効にしてから実行します。
+毎回の授業開始時に、リポジトリのルートのターミナルでキーを非表示で入力し、同じターミナルから起動します。
 
 ```bash
 source .venv/bin/activate
+read -rsp "APIキー: " OPENAI_API_KEY; echo
+export OPENAI_API_KEY
 cd sample-app
 python init_db.py
 python build_index.py
 python main.py
 ```
 
-Codespacesのポート8000番を開きます。終了はCtrl+C。ポートは非公開のまま使います。
-最初はDEMO_MODE=trueなのでAPIを呼びません。固定文・抜粋・単語数の疑似ベクトル・固定の課題取得を表示します。
-**デモの結果でLLMや意味検索の性能を評価しないでください。**
+常に実際のAPIを使います。
+`build_index.py` は資料をEmbedding APIへ送信し、質問時は質問や参照資料を外部APIへ送信します。API利用料金が発生します。
+生成モデルは **gpt-6-luna**。Responses API、reasoning.effort=none、最大出力600トークンを使います。
+意味検索のベクトル作成は **text-embedding-3-small** を使います。
+以前の疑似ベクトルがある場合も、`python build_index.py` で作り直してください。
 
-## APIモード
-
-毎回の授業開始時に、アプリを起動するターミナルで次を実行します。キーの入力は画面にもコマンド履歴にも残りません。
-
-```bash
-read -rsp "APIキー: " OPENAI_API_KEY; echo
-export OPENAI_API_KEY
-export DEMO_MODE=false
-```
-
-同じターミナルからアプリを起動してください。新しいターミナルでは再設定が必要です。終了時はサーバーをCtrl+Cで停止し、`unset OPENAI_API_KEY DEMO_MODE` を実行してターミナルを閉じます。キーは `.env`、Codespaces Secrets、シェルの設定ファイルに保存しません。
+Codespacesのポート8000番を開きます。ポートは非公開のまま使います。
+終了時はサーバーをCtrl+Cで停止し、`unset OPENAI_API_KEY` を実行してターミナルを閉じます。
+新しいターミナルではキーの再設定が必要です。キーは `.env`、Codespaces Secrets、シェルの設定ファイルに保存しません。
 設定変更後はサーバーを再起動します。
-モデルは **gpt-6-luna**。Responses API、reasoning.effort=none、最大出力600トークンを使います。
-意味検索のベクトル作成だけは **text-embedding-3-small** を使います。
-APIモードに変えたら `python build_index.py` でベクトルを作り直します。
 
 ## ファイルを読む順番
 
@@ -57,8 +50,6 @@ Pydanticの入力モデルを除き、独自クラスや継承は使いません
 | vector | ページを閉じてもデータが残るのはなぜ？ | 不要 |
 | tools | 未提出の課題は？ | 不要 |
 
-デモのvectorは意味を理解しません。toolsは固定でpendingを取得します。
-
 ## 資料の追加・更新・削除
 
 `data/*.md` が原本です。`# 資料名` と `## 見出し` を付けて記述します。
@@ -79,4 +70,4 @@ Pydanticの入力モデルを除き、独自クラスや継承は使いません
 - 回数制限は全利用者で共有し、1プロセス内で1分10回・起動後100回。再起動でリセット。
 - これは予算上限ではない。Embedding作成・CLIからの呼び出しにはこの制限は適用されない。
 - 本番公開には認証、利用者別の資料権限、永続的な制限、利用量管理などが必要。
-- `/api/config` はモードのみ返す。キーや環境変数は返さない。
+- APIの応答にキーや環境変数を含めない。

@@ -24,7 +24,26 @@ def load_app(tmp_path, monkeypatch):
         shutil.copytree(ROOT / relative, destination,
                         ignore=shutil.ignore_patterns('*.db', '*.db-*', '__pycache__', '.env'))
         monkeypatch.syspath_prepend(str(destination))
-        return importlib.import_module('main'), destination
+        main = importlib.import_module('main')
+        if relative == 'sample-app':
+            monkeypatch.setenv('OPENAI_API_KEY', 'test-only')
+            def handle(request):
+                body = json.loads(request.content)
+                if request.url.path.endswith('/embeddings'):
+                    return httpx.Response(200, json={
+                        'object': 'list', 'model': body['model'],
+                        'data': [{'object': 'embedding', 'index': 0, 'embedding': [1.0, 0.0]}],
+                        'usage': {'prompt_tokens': 1, 'total_tokens': 1}})
+                if 'tools' in body:
+                    output = [{'type': 'function_call', 'id': 'fc_test', 'call_id': 'call_test',
+                               'name': 'get_assignments', 'arguments': '{"status":"pending"}'}]
+                else:
+                    output = [message('テスト用のAPI回答')]
+                return httpx.Response(200, json=response_json(output))
+            sdk = OpenAI(api_key='test-only', http_client=httpx.Client(
+                transport=httpx.MockTransport(handle)))
+            monkeypatch.setattr(importlib.import_module('llm'), 'OpenAI', lambda **kwargs: sdk)
+        return main, destination
     yield load
     for name in MODULES:
         sys.modules.pop(name, None)
@@ -37,7 +56,10 @@ def test_each_complete_app(load_app, relative, stage):
     if stage == 1: stage = 8
     client = TestClient(main.app)
     assert client.get('/').status_code == 200
-    assert client.get('/api/config').json() == {'demo_mode': True}
+    if relative == 'sample-app':
+        assert client.get('/api/config').status_code == 404
+    else:
+        assert client.get('/api/config').json() == {'demo_mode': True}
     assert client.get('/.env').status_code == 404
     assert client.get('/classroom.db').status_code == 404
     modes = ['plain']
@@ -127,8 +149,6 @@ def test_real_sdk_request_and_function_roundtrip(load_app, monkeypatch):
     main, _ = load_app('sample-app')
     llm = importlib.import_module('llm')
     funcs = importlib.import_module('assignment_tools')
-    monkeypatch.setattr(llm,'DEMO_MODE',False)
-    monkeypatch.setattr(funcs,'DEMO_MODE',False)
     requests = []
     def handle(request):
         body = json.loads(request.content)
@@ -161,7 +181,6 @@ def test_api_errors_and_incomplete(load_app, monkeypatch):
     llm = importlib.import_module('llm')
     with pytest.raises(ValueError):
         llm.response_result(SimpleNamespace(status='incomplete',output_text='途中'))
-    monkeypatch.setattr(llm, 'DEMO_MODE', False)
     monkeypatch.delenv('OPENAI_API_KEY', raising=False)
     assert TestClient(main.app).post('/api/ask',json={'question':'a','mode':'plain'}).status_code == 400
     from openai import APITimeoutError
@@ -187,13 +206,19 @@ def test_settings_use_only_session_environment(tmp_path, monkeypatch, relative):
     monkeypatch.delenv('DEMO_MODE', raising=False)
     monkeypatch.delenv('OPENAI_MODEL', raising=False)
     settings = runpy.run_path(str(directory / 'settings.py'))
-    assert settings['DEMO_MODE'] is True
+    if relative == 'sample-app':
+        assert 'DEMO_MODE' not in settings
+    else:
+        assert settings['DEMO_MODE'] is True
     assert settings['MODEL'] == 'gpt-6-luna'
     assert settings['os'].getenv('OPENAI_API_KEY') is None
     monkeypatch.setenv('OPENAI_API_KEY', 'session-key')
     monkeypatch.setenv('DEMO_MODE', 'false')
     monkeypatch.setenv('OPENAI_MODEL', 'session-model')
     settings = runpy.run_path(str(directory / 'settings.py'))
-    assert settings['DEMO_MODE'] is False
+    if relative == 'sample-app':
+        assert 'DEMO_MODE' not in settings
+    else:
+        assert settings['DEMO_MODE'] is False
     assert settings['MODEL'] == 'session-model'
     assert settings['os'].getenv('OPENAI_API_KEY') == 'session-key'

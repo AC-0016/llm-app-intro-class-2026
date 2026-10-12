@@ -15,6 +15,8 @@ HTML/CSS/JavaScript、Python・FastAPI、SQLite、fetch、Gitの基礎を既習�
 
 ```bash
 source .venv/bin/activate
+read -rsp "APIキー: " OPENAI_API_KEY; echo
+export OPENAI_API_KEY
 cd sample-app
 python init_db.py
 python build_index.py
@@ -23,7 +25,7 @@ python main.py
 
 VS Codeの「ポート」タブから8000番を開きます。**可視性はPrivateのまま**使います。
 終了はCtrl+C。別のアプリを起動するときは、前のサーバーを先に止めます。
-初期設定のデモモードは、APIキーなしで動きます。外部のLLMは呼びません。
+各回のexercise・solutionとyour-appの初期設定はデモモードで、APIキーなしで動きます。sample-appは実際のAPIを使う完成版です。起動前に[sample-appの手順](sample-app/README.md#起動)でAPIキーを設定してください。
 
 ## この教材のサンプル
 
