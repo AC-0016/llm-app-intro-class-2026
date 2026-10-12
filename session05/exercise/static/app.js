@@ -3,21 +3,6 @@ const form = document.getElementById('question-form');
 const button = document.getElementById('send-button');
 const statusText = document.getElementById('status');
 
-async function loadConfig() {
-  try {
-    const response = await fetch('/api/config');
-    if (!response.ok) throw new Error('設定の取得に失敗しました。');
-    const data = await response.json();
-    if (data.demo_mode) {
-      document.getElementById('mode-status').textContent = 'デモモード：固定文・資料抜粋・疑似ベクトルを使います。LLMは呼びません。';
-    } else {
-      document.getElementById('mode-status').textContent = 'APIモード：質問と参照資料を外部APIへ送信します。';
-    }
-  } catch (error) {
-    document.getElementById('mode-status').textContent = error.message;
-  }
-}
-
 function renderSources(sources) {
   const list = document.getElementById('sources');
   list.replaceChildren();
@@ -86,4 +71,3 @@ async function askQuestion(event) {
 }
 
 form.addEventListener('submit', askQuestion);
-loadConfig();

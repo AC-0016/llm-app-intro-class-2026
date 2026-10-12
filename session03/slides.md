@@ -35,8 +35,8 @@ footer: LLMアプリケーション開発 2026
 
 API利用時は毎回、起動するターミナルで非表示入力：
 `read -rsp "APIキー: " OPENAI_API_KEY; echo`
-`export OPENAI_API_KEY DEMO_MODE=false`
-終了時は停止して `unset OPENAI_API_KEY DEMO_MODE`。
+`export OPENAI_API_KEY`
+終了時は停止して `unset OPENAI_API_KEY`。
 
 ---
 
@@ -174,7 +174,6 @@ HTTPリクエストに変わっても、LLMとの通信は再利用できます�
 | sources / context | 第3回は空。後の回で資料を入れる |
 | seconds | サーバーで計測した処理時間 |
 | input_tokens / output_tokens | APIが返した利用量 |
-| demo_mode | デモかAPIかの区別 |
 
 回答の文字列以外も返すことで、画面で状況を確認できます。
 
@@ -269,9 +268,9 @@ HTTPエラーの本文も、教材のAPIはJSONで返します。
 2. POST通信のコメントを外す
 3. 仮の `throw new Error(...)` を削除する
 4. ページを再読み込みして送信する
-5. デモの固定文が表示されることを確認する
+5. APIで生成した回答が表示されることを確認する
 
-次に講師指定のAPIモードで同じ操作を確認します。
+質問や参照資料は外部APIへ送信されます。
 
 ---
 
@@ -297,7 +296,7 @@ HTTPエラーの本文も、教材のAPIはJSONで返します。
 | Method | POST |
 | Request Payload | 入力したquestion、modeはplainか |
 | Status | 正常なら200、不正な入力なら422など |
-| Response | answer、demo_mode、利用量など |
+| Response | answer、利用量など |
 
 一覧が空なら、送信前からタブを開いて再度試します。
 外部LLMへの通信は、ここに表示される1件とは別です。
@@ -388,13 +387,12 @@ LLMの出力も、ユーザー入力と同じように扱います。
 
 ## 実習の完了確認
 
-- デモで送信し、固定文が表示される
+- 質問を送信し、APIで生成した回答が表示される
 - Networkタブで、送った質問と200の応答を確認する
 - `/docs` から不正な入力を送り、422を確認する
 - 画面に戻り、正常な質問を再送できる
 
-API環境を使える場合は、同じ画面から生成も確認します。
-記録には、デモで確認した項目とAPIで確認した項目を分けます。
+API環境を使えない場合は、講師の実演を観察して未検証と記録します。
 
 ---
 

@@ -35,8 +35,8 @@ Embeddingと類似度を理解する
 
 API利用時は毎回、起動するターミナルで非表示入力：
 `read -rsp "APIキー: " OPENAI_API_KEY; echo`
-`export OPENAI_API_KEY DEMO_MODE=false`
-終了時は停止して `unset OPENAI_API_KEY DEMO_MODE`。
+`export OPENAI_API_KEY`
+終了時は停止して `unset OPENAI_API_KEY`。
 
 ---
 
@@ -271,7 +271,7 @@ print(cosine_similarity([1, 0], [0, 1]))  # 0
 - ベクトルの保存・比較の流れを観察するために使う
 - 本物の意味検索の品質評価には使わない
 
-デモとAPIモードの結果を混ぜて採点しません。
+取得資料と生成した回答を別々に評価します。
 
 ---
 
@@ -301,7 +301,7 @@ python main.py
 ```
 
 APIモードは毎回、同じターミナルで環境変数を先に設定します。
-`build_index.py` は、APIモードなら各断片を外部へ送ります。
+`build_index.py` は各断片をEmbedding APIへ送ります。
 初回は資料数を確認し、講師の案内に従って実行します。
 
 ---
@@ -369,7 +369,7 @@ python build_index.py
 ```
 
 再登録は、古いベクトルを消します。
-モデルやデモ/APIモードを変えた場合も、再作成が必要です。
+Embeddingモデルを変えた場合も、再作成が必要です。
 
 本文と古いベクトルの組み合わせで検索しないための仕組みです。
 

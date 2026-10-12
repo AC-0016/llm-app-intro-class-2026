@@ -1,7 +1,7 @@
 """LLMとの通信。まず ask_plain() から読む。"""
 import os
 from openai import OpenAI
-from settings import DEMO_MODE, MODEL
+from settings import MODEL
 
 
 def make_client():
@@ -23,11 +23,6 @@ def response_result(response):
 
 
 def ask_plain(question):
-    if DEMO_MODE:
-        return {
-            'answer': '【デモ・固定文】資料なしの応答です。実際の生成はAPIモードで比較します。',
-            'input_tokens': 0, 'output_tokens': 0,
-        }
     client = make_client()
     # BEGIN EXERCISE api
     response = client.responses.create(
@@ -56,11 +51,6 @@ def ask_with_context(question, chunks):
     if not chunks:
         return {
             'answer': '参照できる資料が見つかりません。検索語を変えてください。',
-            'input_tokens': 0, 'output_tokens': 0,
-        }
-    if DEMO_MODE:
-        return {
-            'answer': '【デモ・抜粋表示】以下は生成文ではありません。\n' + context,
             'input_tokens': 0, 'output_tokens': 0,
         }
     client = make_client()

@@ -35,8 +35,8 @@ LLMの提案と、Pythonによる実行を区別する。
 
 API利用時は毎回、起動するターミナルで非表示入力：
 `read -rsp "APIキー: " OPENAI_API_KEY; echo`
-`export OPENAI_API_KEY DEMO_MODE=false`
-終了時は停止して `unset OPENAI_API_KEY DEMO_MODE`。
+`export OPENAI_API_KEY`
+終了時は停止して `unset OPENAI_API_KEY`。
 
 ---
 
@@ -371,7 +371,7 @@ APIモードで、次の質問を試します。
 | pendingのはずがdoneになった | 質問・関数の説明・実際の引数 |
 | pendingで提出済みの行が返る | Python関数とSQLの条件 |
 | DB結果は正しいが回答が違う | 2回目の入力と生成結果 |
-| どの質問でもpendingになる | デモモードではないか |
+| どの質問でもpendingになる | 関数定義と渡した引数を確認 |
 
 学習用の詳細欄で、引数とDB結果を回答と分けて確認します。
 

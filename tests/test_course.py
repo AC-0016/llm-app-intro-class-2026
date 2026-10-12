@@ -24,8 +24,8 @@ def load_app(tmp_path, monkeypatch):
         shutil.copytree(ROOT / relative, destination,
                         ignore=shutil.ignore_patterns('*.db', '*.db-*', '__pycache__', '.env'))
         monkeypatch.syspath_prepend(str(destination))
-        main = importlib.import_module('main')
-        if relative == 'sample-app':
+        main = importlib.import_module('main' if (destination / 'main.py').exists() else 'llm')
+        if relative != 'your-app':
             monkeypatch.setenv('OPENAI_API_KEY', 'test-only')
             def handle(request):
                 body = json.loads(request.content)
@@ -56,7 +56,7 @@ def test_each_complete_app(load_app, relative, stage):
     if stage == 1: stage = 8
     client = TestClient(main.app)
     assert client.get('/').status_code == 200
-    if relative == 'sample-app':
+    if relative != 'your-app':
         assert client.get('/api/config').status_code == 404
     else:
         assert client.get('/api/config').json() == {'demo_mode': True}
@@ -206,7 +206,7 @@ def test_settings_use_only_session_environment(tmp_path, monkeypatch, relative):
     monkeypatch.delenv('DEMO_MODE', raising=False)
     monkeypatch.delenv('OPENAI_MODEL', raising=False)
     settings = runpy.run_path(str(directory / 'settings.py'))
-    if relative == 'sample-app':
+    if relative != 'your-app':
         assert 'DEMO_MODE' not in settings
     else:
         assert settings['DEMO_MODE'] is True
@@ -216,9 +216,19 @@ def test_settings_use_only_session_environment(tmp_path, monkeypatch, relative):
     monkeypatch.setenv('DEMO_MODE', 'false')
     monkeypatch.setenv('OPENAI_MODEL', 'session-model')
     settings = runpy.run_path(str(directory / 'settings.py'))
-    if relative == 'sample-app':
+    if relative != 'your-app':
         assert 'DEMO_MODE' not in settings
     else:
         assert settings['DEMO_MODE'] is False
     assert settings['MODEL'] == 'session-model'
     assert settings['os'].getenv('OPENAI_API_KEY') == 'session-key'
+
+
+@pytest.mark.parametrize('kind', ['exercise', 'solution'])
+def test_session02_api_path(load_app, kind):
+    llm, _ = load_app(f'session02/{kind}')
+    if kind == 'exercise':
+        with pytest.raises(NotImplementedError, match='TODO'):
+            llm.ask_plain('質問')
+    else:
+        assert llm.ask_plain('質問')['answer'] == 'テスト用のAPI回答'

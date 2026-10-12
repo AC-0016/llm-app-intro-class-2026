@@ -35,8 +35,8 @@ footer: LLMアプリケーション開発 2026
 
 API利用時は毎回、起動するターミナルで非表示入力：
 `read -rsp "APIキー: " OPENAI_API_KEY; echo`
-`export OPENAI_API_KEY DEMO_MODE=false`
-終了時は停止して `unset OPENAI_API_KEY DEMO_MODE`。
+`export OPENAI_API_KEY`
+終了時は停止して `unset OPENAI_API_KEY`。
 
 ---
 
@@ -256,7 +256,7 @@ python main.py
 
 初回起動時も登録しますが、今回は明示的に登録を体験します。
 「資料全体を渡す」を選び、「第7回の提出物は？」と質問します。
-デモでは本文の抜粋を表示します。
+取得した本文と、APIで生成した回答を比較します。
 
 ---
 

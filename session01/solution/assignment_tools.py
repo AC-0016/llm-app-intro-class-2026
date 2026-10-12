@@ -1,7 +1,7 @@
 """第7回: LLMが提案した関数を、Pythonが検証して実行する。"""
 import json
 import sqlite3
-from settings import DEMO_MODE, MODEL, DATABASE
+from settings import MODEL, DATABASE
 from llm import make_client, response_result
 
 TOOLS = [{
@@ -66,11 +66,6 @@ def execute_tool(name, arguments):
 
 
 def ask_assignments(question):
-    if DEMO_MODE:
-        # デモはLLMの関数選択ではなく、固定のpendingを実行する。
-        rows = execute_tool('get_assignments', '{"status":"pending"}')
-        return {'answer': '【デモ・固定で未提出を取得】\n' + json.dumps(rows, ensure_ascii=False),
-                'input_tokens': 0, 'output_tokens': 0, 'tool_results': rows}
     client = make_client()
     history = [{'role': 'user', 'content': question}]
     instructions = '課題の提出状況は必ずget_assignmentsの結果だけで答えてください。日本語で回答してください。'

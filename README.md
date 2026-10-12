@@ -25,7 +25,7 @@ python main.py
 
 VS Codeの「ポート」タブから8000番を開きます。**可視性はPrivateのまま**使います。
 終了はCtrl+C。別のアプリを起動するときは、前のサーバーを先に止めます。
-各回のexercise・solutionとyour-appの初期設定はデモモードで、APIキーなしで動きます。sample-appは実際のAPIを使う完成版です。起動前に[sample-appの手順](sample-app/README.md#起動)でAPIキーを設定してください。
+sample-appと各回のexercise・solutionは実際のAPIを使います。your-appの初期設定はデモモードです。起動前に[sample-appの手順](sample-app/README.md#起動)でAPIキーを設定してください。
 
 ## この教材のサンプル
 
@@ -74,24 +74,18 @@ VS Codeの「ポート」タブから8000番を開きます。**可視性はPriv
 ```bash
 read -rsp "APIキー: " OPENAI_API_KEY; echo
 export OPENAI_API_KEY
-export DEMO_MODE=false
 ```
 
-同じターミナルからアプリを起動してください。新しいターミナルでは再設定が必要です。終了時はサーバーをCtrl+Cで停止し、`unset OPENAI_API_KEY DEMO_MODE` を実行してターミナルを閉じます。キーは `.env`、Codespaces Secrets、シェルの設定ファイルに保存しません。
+同じターミナルからアプリを起動してください。新しいターミナルでは再設定が必要です。終了時はサーバーをCtrl+Cで停止し、`unset OPENAI_API_KEY` を実行してターミナルを閉じます。キーは `.env`、Codespaces Secrets、シェルの設定ファイルに保存しません。
 設定変更後はサーバーを起動し直します。キー、DBはGit管理しません。キーが漏れたら無効化・再発行します。
 使用モデルの可否と利用料金は、開講時に講師が確認してください。
 
-### デモでできること・できないこと
+### APIで確認すること
 
-| 機能 | デモ | APIモード |
-|---|---|---|
-| 資料なし | 固定文 | gpt-6-lunaの生成 |
-| 資料利用 | 本文の抜粋 | 根拠を渡して生成 |
-| 意味検索 | 単語数の疑似ベクトル | Embedding APIでベクトル化 |
-| 課題DB | 固定で未提出を取得 | LLMが関数の引数を選択 |
-
-デモで画面・DB・制限を確認できますが、生成品質・意味検索・関数選択の精度は評価できません。
-第2・4回の穴埋めはAPIモードで確認します。API利用不可なら講師の実演を観察し、未検証を記録します。
+sample-appと各回の演習・解答は、生成・意味検索・関数選択に実際のAPIを使います。
+第2・4回の穴埋めもAPIで確認します。API利用不可なら講師の実演を観察し、未検証を記録します。
+検索結果がない場合は回答を生成しません。第8回の利用上限はこの経路で確認できます。
+your-appは引き続きデモモードを含みます。APIを使う場合だけ `export DEMO_MODE=false` を設定し、終了時に `unset DEMO_MODE` も実行します。
 
 ## よくある問題
 
@@ -126,5 +120,5 @@ Windows PowerShellの有効化は `.venv\Scripts\Activate.ps1` です。
 python -m pytest -q
 ```
 
-テストは外部APIを実際には呼びません。API互換の応答を与えたテストとデモで検証します。
+テストは外部APIを実際には呼びません。API互換の応答を与えたテストで検証します。
 スライドはVS CodeのMarp拡張でプレビューできます。再出力は `scripts/export-slides.sh` を参照してください。

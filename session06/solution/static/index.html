@@ -11,14 +11,14 @@
 <main>
   <header><p class="eyebrow">LLM APP INTRO / 2026</p><h1>授業資料アシスタント</h1>
   <p>資料を調べ、根拠を確認しながら学ぶ。</p></header>
-  <p id="mode-status" role="status">設定を確認しています…</p>
+  <p>質問と参照資料を外部APIへ送信します。</p>
   <form id="question-form">
     <label for="mode">回答の方式</label>
     <select id="mode">
       <option value="plain">資料なし</option>
       <option value="context">資料全体を渡す</option>
       <option value="keyword">キーワード検索</option>
-      <option value="vector" selected>意味検索（デモ時は疑似ベクトル）</option>
+      <option value="vector" selected>意味検索</option>
     </select>
     <label for="question">質問</label>
     <textarea id="question" maxlength="500" required rows="3" placeholder="SQLiteにデータを保存するには？"></textarea>

@@ -107,11 +107,10 @@ APIキーを知る人は、利用権限を使える場合があります。
 ```bash
 read -rsp "APIキー: " OPENAI_API_KEY; echo
 export OPENAI_API_KEY
-export DEMO_MODE=false
 ```
 
 同じターミナルから起動します。新しいターミナルでは再設定します。
-終了時はサーバーを停止し、`unset OPENAI_API_KEY DEMO_MODE`。
+終了時はサーバーを停止し、`unset OPENAI_API_KEY`。
 キーはファイルに保存しません。`.env` は読み込みません。
 
 ---
@@ -124,8 +123,8 @@ cd session02/exercise
 python one_shot.py
 ```
 
-- API演習では、講師の案内に従い `DEMO_MODE=false` にする
-- デモなら固定文が返り、API呼び出しの穴埋めは通らない
+- APIキーを環境変数に設定してから起動する
+- 未実装のAPI呼び出しはNotImplementedErrorで止まる
 - キーを設定した同じターミナルから起動する
 
 キーの値を表示して確認する必要はありません。
@@ -289,7 +288,7 @@ SDKの `output_text` で回答のテキストを取り出します。
 4. `python one_shot.py` を実行する
 5. 「FastAPIを2文で説明して」と入力する
 
-デモではAPI部分を通りません。穴埋めの確認は講師指定のAPI環境で行います。
+穴埋めの確認は講師指定のAPI環境で行います。
 
 ---
 
@@ -383,7 +382,7 @@ API環境が使えない場合は、講師の実演を観察します。
 |---|---|
 | importで止まる | 仮想環境と依存パッケージ |
 | NotImplementedError | 穴埋めと仮のraise |
-| デモの固定文だけが返る | DEMO_MODE環境変数と再起動 |
+| コードの変更が反映されない | 保存とサーバーの再起動 |
 | キー設定の案内が出る | 同じターミナルでの環境変数の設定・再起動 |
 | 回答が完了しない | 入力の長さと表示された案内 |
 
@@ -410,7 +409,7 @@ except ValueError as error:
 1. ブラウザのJavaScriptにキーを書いてよい？
 2. 出力を短くしても、入力トークンは料金に関係する？
 3. `instructions` と `input` は何を分けている？
-4. デモモードのトークン数0は、無料のLLMを使った意味？
+4. 入力・出力トークン数は、どの利用量を表す？
 
 ---
 

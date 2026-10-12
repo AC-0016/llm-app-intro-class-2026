@@ -6,7 +6,7 @@ from fastapi import FastAPI, HTTPException
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
 from openai import APIError, APITimeoutError, RateLimitError
-from settings import BASE_DIR, DATABASE, DEMO_MODE
+from settings import BASE_DIR, DATABASE
 from llm import ask_plain
 
 
@@ -20,11 +20,6 @@ class Question(BaseModel):
     top_k: int = Field(default=3, ge=1, le=5)
 
 
-
-
-@app.get('/api/config')
-def config():
-    return {'demo_mode': DEMO_MODE}
 
 
 @app.post('/api/ask')
@@ -52,7 +47,6 @@ def ask(request: Question):
     result['sources'] = chunks
     result['context'] = ''
     result['seconds'] = round(time.monotonic() - started, 2)
-    result['demo_mode'] = DEMO_MODE
     return result
 
 

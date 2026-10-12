@@ -1,25 +1,13 @@
-"""意味検索。デモでは手作りの数値を使い、APIの精度とは比較しない。"""
+"""Embedding APIで文章をベクトル化し、類似度で検索する。"""
 import json
 import math
 import sqlite3
-from settings import DEMO_MODE, DATABASE, EMBEDDING_MODEL
+from settings import DATABASE, EMBEDDING_MODEL
 from llm import make_client
 from knowledge import all_chunks, get_score
 
 
-def embedding_name():
-    if DEMO_MODE:
-        return 'demo-word-count-v1'
-    return EMBEDDING_MODEL
-
-
 def embed(text):
-    if DEMO_MODE:
-        # 数値の流れを見るためだけの疑似ベクトル。意味を理解しない。
-        vector = []
-        for word in ['sqlite', '保存', 'fetch', '提出', 'api', 'キー', 'css', 'sql']:
-            vector.append(float(text.lower().count(word)))
-        return vector
     client = make_client()
     response = client.embeddings.create(model=EMBEDDING_MODEL, input=text)
     return response.data[0].embedding
@@ -48,7 +36,7 @@ def build_embeddings():
     for chunk in all_chunks():
         text = chunk['title'] + '\n' + chunk['heading'] + '\n' + chunk['body']
         vector = embed(text)
-        values.append((json.dumps(vector), embedding_name(), chunk['id']))
+        values.append((json.dumps(vector), EMBEDDING_MODEL, chunk['id']))
     conn = sqlite3.connect(DATABASE)
     cursor = conn.cursor()
     cursor.executemany('UPDATE chunks SET embedding = ?, embedding_model = ? WHERE id = ?', values)
@@ -65,8 +53,8 @@ def search_vector(question, top_k):
     conn.close()
     vectors = {}
     for row in rows:
-        if row[1] is None or row[2] != embedding_name():
-            raise ValueError('このモードのベクトルがありません。python build_index.py を実行してください。')
+        if row[1] is None or row[2] != EMBEDDING_MODEL:
+            raise ValueError('このモデルのベクトルがありません。python build_index.py を実行してください。')
         vectors[row[0]] = json.loads(row[1])
     if not rows:
         return []
