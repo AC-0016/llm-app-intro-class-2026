@@ -1,6 +1,6 @@
 # 第8回：評価・改善と安全な運用
 
-[スライド](slides.md) / [PDF](slides.pdf) / [講師用メモ](teacher.md)
+[スライド](slides.md) / [PDF](slides.pdf)
 
 ## ゴール
 

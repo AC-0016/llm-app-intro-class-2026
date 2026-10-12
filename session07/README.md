@@ -1,6 +1,6 @@
 # 第7回：DB・APIを使うLLM
 
-[スライド](slides.md) / [PDF](slides.pdf) / [講師用メモ](teacher.md)
+[スライド](slides.md) / [PDF](slides.pdf)
 
 ## ゴール
 

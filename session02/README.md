@@ -1,6 +1,6 @@
 # 第2回：LLM APIの基礎
 
-[スライド](slides.md) / [PDF](slides.pdf) / [講師用メモ](teacher.md)
+[スライド](slides.md) / [PDF](slides.pdf)
 
 ## ゴール
 

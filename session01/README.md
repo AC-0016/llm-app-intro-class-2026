@@ -1,6 +1,6 @@
 # 第1回：LLMイントロダクション
 
-[スライド](slides.md) / [PDF](slides.pdf) / [講師用メモ](teacher.md)
+[スライド](slides.md) / [PDF](slides.pdf)
 
 ## ゴール
 
