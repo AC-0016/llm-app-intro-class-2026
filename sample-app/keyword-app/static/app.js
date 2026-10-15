@@ -20,7 +20,7 @@ function showSources(sources) {
     body.textContent = source.body;
 
     const note = document.createElement('small');
-    note.textContent = '原本: data/' + source.source + ' / 一致した検索語の数: ' + source.score;
+    note.textContent = '原本: data/' + source.source + ' の' + source.slide + '枚目 / 一致した検索語の数: ' + source.score;
 
     item.appendChild(title);
     item.appendChild(body);

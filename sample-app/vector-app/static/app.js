@@ -20,7 +20,7 @@ function showSources(sources) {
 
     const note = document.createElement('small');
     // 類似度は1に近いほど、質問と意味が近い。小数第3位まで表示する。
-    note.textContent = '原本: data/' + source.source + ' / 類似度: ' + source.score.toFixed(3);
+    note.textContent = '原本: data/' + source.source + ' の' + source.slide + '枚目 / 類似度: ' + source.score.toFixed(3);
 
     item.appendChild(title);
     item.appendChild(body);
