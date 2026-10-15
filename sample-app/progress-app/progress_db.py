@@ -6,7 +6,6 @@ tasks テーブル
   done : 完了フラグ。SQLiteには真偽値の型が無いので、1（True）と0（False）で保存する。
 """
 import sqlite3
-from settings import DATABASE
 
 # 最初に入れておく架空の進捗。(id, やること, 完了フラグ)
 FIRST_TASKS = [
@@ -19,9 +18,9 @@ FIRST_TASKS = [
 ]
 
 
-def init_db():
-    """テーブルが無ければ作り、最初の進捗を入れる。"""
-    conn = sqlite3.connect(DATABASE)
+def init_db(database):
+    """テーブルが無ければ作り、最初の進捗を入れる。database はDBファイルの場所。"""
+    conn = sqlite3.connect(database)
     cursor = conn.cursor()
     cursor.execute('CREATE TABLE IF NOT EXISTS tasks (id INTEGER PRIMARY KEY, task TEXT, done INTEGER)')
     # INSERT OR IGNORE は、同じidの行がすでにあれば何もしない。
@@ -31,8 +30,8 @@ def init_db():
     conn.close()
 
 
-def get_tasks(status):
-    """進捗を読み出す。
+def get_tasks(database, status):
+    """database のDBから進捗を読み出す。
 
     status が 'all' なら全件、'todo' なら未完了だけ、'done' なら完了だけを返す。
     返す値の例: [{'id': 4, 'task': 'Janomeでキーワード検索を作る', 'done': False}]
@@ -47,7 +46,7 @@ def get_tasks(status):
     else:
         raise ValueError('status は all・todo・done のどれかにしてください。')
 
-    conn = sqlite3.connect(DATABASE)
+    conn = sqlite3.connect(database)
     cursor = conn.cursor()
     cursor.execute(sql)
     rows = cursor.fetchall()

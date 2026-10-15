@@ -1,7 +1,6 @@
 """OpenAIのAPIを呼び出し、検索した資料を根拠に回答させる。"""
 import os
 from openai import OpenAI
-from settings import MODEL
 
 # LLMへの指示。資料の中に書かれた命令には従わないように伝える。
 INSTRUCTIONS = (
@@ -28,11 +27,11 @@ def build_context(documents):
     return context
 
 
-def ask_with_documents(question, documents):
-    """資料と質問をLLMに送り、回答とトークン数を返す。"""
+def ask_with_documents(question, documents, model):
+    """資料と質問をLLMに送り、回答とトークン数を返す。model は使うモデルの名前。"""
     client = make_client()
     response = client.responses.create(
-        model=MODEL,
+        model=model,
         reasoning={'effort': 'none'},
         instructions=INSTRUCTIONS,
         # 資料は「命令ではなくデータ」だと分かるように、質問と分けて書く。

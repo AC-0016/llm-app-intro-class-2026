@@ -3,21 +3,36 @@
 実行: python main.py
 ブラウザ: ポート8000番
 """
+import os
+from pathlib import Path
 import uvicorn
 from fastapi import FastAPI, HTTPException
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
 from openai import APIError, APITimeoutError, RateLimitError
-from settings import BASE_DIR
 from documents import load_documents
 from search import extract_words, search_documents
 from llm import ask_with_documents
 
+# ===== 設定 =====
+# APIキーはここに書かず、ターミナルの環境変数 OPENAI_API_KEY で渡す。
+
+# このファイルがあるフォルダ。資料や画面のファイルを探すときの基準にする。
+BASE_DIR = Path(__file__).resolve().parent
+
+# 授業資料のMarkdownを置くフォルダ。
+DATA_DIR = BASE_DIR / 'data'
+
+# 使うモデル。環境変数 OPENAI_MODEL があれば、そちらを使う。
+MODEL = os.getenv('OPENAI_MODEL', 'gpt-6-luna')
+
 # LLMに渡す資料の最大件数。
 TOP_K = 3
 
+# ===== ここからアプリ =====
+
 # 起動時に data/ の資料を読み込む。資料を直したら、サーバーを再起動する。
-documents = load_documents()
+documents = load_documents(DATA_DIR)
 
 app = FastAPI(title='キーワード検索アプリ')
 
@@ -51,7 +66,7 @@ def ask(request: Question):
         }
     else:
         try:
-            result = ask_with_documents(question, found)
+            result = ask_with_documents(question, found, MODEL)
         except ValueError as error:
             raise HTTPException(status_code=400, detail=str(error))
         except APITimeoutError:

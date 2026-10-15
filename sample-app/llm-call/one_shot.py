@@ -6,7 +6,15 @@
 """
 import os
 from openai import OpenAI, APIError
-from settings import MODEL, INSTRUCTIONS
+
+# ===== 設定 =====
+# APIキーはここに書かず、ターミナルの環境変数 OPENAI_API_KEY で渡す。
+
+# 使うモデル。環境変数 OPENAI_MODEL があれば、そちらを使う。
+MODEL = os.getenv('OPENAI_MODEL', 'gpt-6-luna')
+
+# LLMへの指示。one_shot.py と chat.py で同じ指示にして、違いを「履歴の有無」だけにする。
+INSTRUCTIONS = 'あなたは授業の学習を手伝うアシスタントです。日本語で簡潔に答えてください。'
 
 
 def make_client():

@@ -1,14 +1,11 @@
 """data/ フォルダのMarkdownを読み、「## 見出し」ごとに1つの資料に分ける。"""
-from settings import BASE_DIR
-
-DATA_DIR = BASE_DIR / 'data'
 
 # 1つの資料の本文の上限。長すぎる資料はLLMに渡す文章が増えすぎる。
 MAX_BODY_LENGTH = 1000
 
 
-def load_documents():
-    """data/*.md を読み、資料のリストを返す。
+def load_documents(data_dir):
+    """data_dir フォルダの *.md を読み、資料のリストを返す。
 
     1つの資料は次のような辞書になる。
     {'id': 1, 'source': '01-web.md', 'title': 'Webアプリの復習ノート',
@@ -16,7 +13,7 @@ def load_documents():
     """
     documents = []
     # ファイル名の順（01-web.md、02-course.md…）に読む。
-    for path in sorted(DATA_DIR.glob('*.md')):
+    for path in sorted(data_dir.glob('*.md')):
         title = path.stem  # 「# 資料名」が無いときはファイル名を使う
         heading = '本文'   # 最初の「## 見出し」より前の文章に付ける見出し
         lines = []

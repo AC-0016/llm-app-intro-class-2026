@@ -8,7 +8,6 @@
 import json
 import os
 from openai import OpenAI
-from settings import MODEL
 from progress_db import get_tasks
 
 # LLMに教える「使える関数」の説明。LLMはこの説明を読んで、呼ぶかどうかと引数を決める。
@@ -40,8 +39,8 @@ def make_client():
     return OpenAI(timeout=30.0, max_retries=0)
 
 
-def run_tool(name, arguments):
-    """LLMが呼びたいと言ってきた関数を、確かめてから実行する。
+def run_tool(name, arguments, database):
+    """LLMが呼びたいと言ってきた関数を、確かめてから実行する。database はDBファイルの場所。
 
     LLMの出力は信用せず、許可した関数名と引数の形だけを受け付ける。
     eval() や exec() は使わない。
@@ -52,18 +51,21 @@ def run_tool(name, arguments):
     args = json.loads(arguments)
     if not isinstance(args, dict) or list(args.keys()) != ['status']:
         raise ValueError('引数の形が正しくありません。')
-    return get_tasks(args['status'])
+    return get_tasks(database, args['status'])
 
 
-def ask_with_tools(question):
-    """質問に答える。必要ならLLMに get_tasks を呼ばせる。"""
+def ask_with_tools(question, model, database):
+    """質問に答える。必要ならLLMに get_tasks を呼ばせる。
+
+    model は使うモデルの名前、database は進捗DBのファイルの場所。
+    """
     client = make_client()
     # LLMとのやり取りを、この順番でリストにためていく。
     history = [{'role': 'user', 'content': question}]
 
     # 1回目: 質問と使える関数を送る。
     first = client.responses.create(
-        model=MODEL,
+        model=model,
         reasoning={'effort': 'none'},
         instructions=INSTRUCTIONS,
         input=history,
@@ -82,7 +84,7 @@ def ask_with_tools(question):
     tool_results = []
     for item in first.output:
         if item.type == 'function_call':
-            rows = run_tool(item.name, item.arguments)
+            rows = run_tool(item.name, item.arguments, database)
             tool_results.append({'name': item.name, 'arguments': item.arguments, 'rows': rows})
             history.append({
                 'type': 'function_call_output',
@@ -98,7 +100,7 @@ def ask_with_tools(question):
     else:
         # 2回目: 関数の結果を送り、回答を書かせる。tools は渡さず、これ以上関数を呼ばせない。
         final = client.responses.create(
-            model=MODEL,
+            model=model,
             reasoning={'effort': 'none'},
             instructions=INSTRUCTIONS,
             input=history,

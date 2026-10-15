@@ -44,7 +44,7 @@ python chat.py       # 会話の履歴をのせて呼び出す（何も入力せ
 1. `one_shot.py` の `ask_once()`：質問の文字列だけを `input` に入れて送る
 2. `chat.py` の `ask_with_history()` と `main()`：質問と回答を `history` のリストにため、毎回まとめて送る
 
-2つの違いは `input` に入れるものだけです。指示文（`settings.py` の `INSTRUCTIONS`）は同じです。
+2つの違いは `input` に入れるものだけです。指示文（各スクリプトの先頭にある `INSTRUCTIONS`）は同じです。
 
 | | `one_shot.py` | `chat.py` |
 |---|---|---|

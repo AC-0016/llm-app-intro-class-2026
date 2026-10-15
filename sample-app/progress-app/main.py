@@ -3,17 +3,32 @@
 実行: python main.py
 ブラウザ: ポート8001番
 """
+import os
+from pathlib import Path
 import uvicorn
 from fastapi import FastAPI, HTTPException
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
 from openai import APIError, APITimeoutError, RateLimitError
-from settings import BASE_DIR
 from progress_db import init_db
 from llm import ask_with_tools
 
+# ===== 設定 =====
+# APIキーはここに書かず、ターミナルの環境変数 OPENAI_API_KEY で渡す。
+
+# このファイルがあるフォルダ。DBや画面のファイルを探すときの基準にする。
+BASE_DIR = Path(__file__).resolve().parent
+
+# 進捗を保存するSQLiteのファイル。Gitには入れない。
+DATABASE = BASE_DIR / 'progress.db'
+
+# 使うモデル。環境変数 OPENAI_MODEL があれば、そちらを使う。
+MODEL = os.getenv('OPENAI_MODEL', 'gpt-6-luna')
+
+# ===== ここからアプリ =====
+
 # 起動時にDBを準備する。すでにある進捗は上書きしない。
-init_db()
+init_db(DATABASE)
 
 app = FastAPI(title='制作の進捗アプリ')
 
@@ -30,7 +45,7 @@ def ask(request: Question):
         raise HTTPException(status_code=422, detail='質問を入力してください。')
 
     try:
-        result = ask_with_tools(question)
+        result = ask_with_tools(question, MODEL, DATABASE)
     except ValueError as error:
         raise HTTPException(status_code=400, detail=str(error))
     except APITimeoutError:
