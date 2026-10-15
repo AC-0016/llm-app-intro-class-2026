@@ -1,7 +1,7 @@
 """制作の進捗アプリ（SQLite + Function Calling）。
 
 実行: python main.py
-ブラウザ: ポート8001番
+ブラウザ: ポート8003番
 """
 import os
 from pathlib import Path
@@ -62,4 +62,4 @@ def ask(request: Question):
 app.mount('/', StaticFiles(directory=BASE_DIR / 'static', html=True), name='static')
 
 if __name__ == '__main__':
-    uvicorn.run(app, host='0.0.0.0', port=8001)
+    uvicorn.run(app, host='0.0.0.0', port=8003)

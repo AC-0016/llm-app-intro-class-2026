@@ -1,7 +1,7 @@
 """チャットアプリ（会話の履歴をのせてLLMを呼び出す）。
 
 実行: python main.py
-ブラウザ: ポート8002番
+ブラウザ: ポート8000番
 
 会話の履歴はブラウザ（static/app.js の history）が持ち、質問のたびに全部送ってくる。
 サーバーは履歴を保存しない。
@@ -81,4 +81,4 @@ def chat(request: ChatRequest):
 app.mount('/', StaticFiles(directory=BASE_DIR / 'static', html=True), name='static')
 
 if __name__ == '__main__':
-    uvicorn.run(app, host='0.0.0.0', port=8002)
+    uvicorn.run(app, host='0.0.0.0', port=8000)

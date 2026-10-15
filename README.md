@@ -17,11 +17,12 @@ HTML/CSS/JavaScript、Python・FastAPI、SQLite、fetch、Gitの基礎を既習�
 source .venv/bin/activate
 read -rsp "APIキー: " OPENAI_API_KEY; echo
 export OPENAI_API_KEY
-cd sample-app/keyword-app   # 進捗アプリなら cd sample-app/progress-app（8001番）
+cd sample-app/keyword-app   # ほかのアプリは sample-app/README.md を参照
+python init_db.py           # 最初の1回と、資料を直したとき
 python main.py
 ```
 
-VS Codeの「ポート」タブから8000番を開きます。**可視性はPrivateのまま**使います。
+VS Codeの「ポート」タブから8001番を開きます（sample-appのアプリごとの番号は [sample-app/README.md](sample-app/README.md) を参照）。**可視性はPrivateのまま**使います。
 終了はCtrl+C。別のアプリを起動するときは、前のサーバーを先に止めます。
 sample-appと各回のexercise・solutionは実際のAPIを使います。your-appの初期設定はデモモードです。起動前に[sample-appの手順](sample-app/README.md#起動)でAPIキーを設定してください。
 

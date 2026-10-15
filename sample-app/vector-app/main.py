@@ -1,7 +1,7 @@
 """ベクトル検索アプリ（Embedding + LLM）。
 
 実行: python init_db.py（最初と、資料を直したとき）→ python main.py
-ブラウザ: ポート8003番
+ブラウザ: ポート8002番
 """
 import json
 import os
@@ -122,4 +122,4 @@ def ask(request: Question):
 app.mount('/', StaticFiles(directory=BASE_DIR / 'static', html=True), name='static')
 
 if __name__ == '__main__':
-    uvicorn.run(app, host='0.0.0.0', port=8003)
+    uvicorn.run(app, host='0.0.0.0', port=8002)
