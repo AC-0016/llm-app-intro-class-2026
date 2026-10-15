@@ -9,6 +9,10 @@ form, section, details { background: white; padding: 22px; margin: 18px 0; borde
 label { display: block; font-weight: bold; margin-top: 12px; }
 input, textarea, select, button { box-sizing: border-box; font: inherit; padding: 10px; border: 1px solid #a5b8c3; border-radius: 5px; }
 textarea, input { width: 100%; }
+fieldset { border: 1px solid #a5b8c3; border-radius: 5px; margin: 12px 0 0; padding: 4px 14px 12px; }
+legend { font-weight: bold; padding: 0 4px; }
+label.check { font-weight: normal; display: flex; gap: 8px; align-items: center; }
+label.check input { width: auto; }
 textarea { resize: vertical; }
 select { max-width: 100%; }
 button { display: block; background: #126b60; color: white; margin-top: 22px; cursor: pointer; }

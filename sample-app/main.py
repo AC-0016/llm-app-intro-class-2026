@@ -1,7 +1,6 @@
 """授業資料アシスタント。実行: python main.py"""
 import threading
 import time
-from typing import Literal
 import uvicorn
 from fastapi import FastAPI, HTTPException
 from fastapi.staticfiles import StaticFiles
@@ -22,7 +21,9 @@ app = FastAPI(title='授業資料アシスタント')
 
 class Question(BaseModel):
     question: str = Field(min_length=1, max_length=500)
-    mode: Literal['plain', 'keyword', 'tools'] = 'keyword'
+    # 画面のチェックボックスに対応する。どちらも外すと資料なしで回答する。
+    use_keyword: bool = False
+    use_tools: bool = False
     top_k: int = Field(default=3, ge=1, le=5)
 
 
@@ -54,19 +55,21 @@ def ask(request: Question):
     check_limit()
     started = time.monotonic()
     chunks = []
+    keywords = []
     try:
-        # ここが処理の分かれ道。選んだ方式だけを実行する。
-        if request.mode == 'plain':
-            result = ask_plain(question)
-        elif request.mode == 'keyword':
+        if request.use_keyword:
             keywords = extract_words(question)
-            if not keywords:
+            # 課題DBも使う場合は、検索語が無くても課題DBだけで回答できる。
+            if not keywords and not request.use_tools:
                 raise ValueError('質問から検索語を取り出せませんでした。名詞を含めて質問してください。')
             chunks = search_keyword(question, request.top_k)
+        # ここが処理の分かれ道。チェックした機能の組み合わせで呼ぶ関数を選ぶ。
+        if request.use_tools:
+            result = ask_assignments(question, chunks)
+        elif request.use_keyword:
             result = ask_with_context(question, chunks)
-            result['keywords'] = keywords
-        elif request.mode == 'tools':
-            result = ask_assignments(question)
+        else:
+            result = ask_plain(question)
     except NotImplementedError as error:
         raise HTTPException(status_code=501, detail=str(error)) from None
     except ValueError as error:
@@ -78,6 +81,7 @@ def ask(request: Question):
     except APIError:
         # 例外全文には内部情報が含まれる場合があるため画面へ返さない。
         raise HTTPException(status_code=502, detail='API呼び出しに失敗しました。キー・モデル・利用枠を確認してください。') from None
+    result['keywords'] = keywords
     result['sources'] = chunks
     result['context'] = build_context(chunks)
     result['seconds'] = round(time.monotonic() - started, 2)

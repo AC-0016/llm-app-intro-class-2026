@@ -13,16 +13,15 @@
   <p>資料を調べ、根拠を確認しながら学ぶ。</p></header>
   <p>質問と参照資料を外部APIへ送信します。</p>
   <form id="question-form">
-    <label for="mode">回答の方式</label>
-    <select id="mode">
-      <option value="plain">資料なし</option>
-      <option value="keyword" selected>キーワード検索（Janome）</option>
-      <option value="tools">課題DB（架空データ）</option>
-    </select>
+    <fieldset>
+      <legend>回答に使う機能（選ばない場合は資料なしで回答）</legend>
+      <label class="check"><input type="checkbox" id="use-keyword"> キーワード検索（Janome）</label>
+      <label class="check"><input type="checkbox" id="use-tools"> 課題DB（架空データ）</label>
+    </fieldset>
     <label for="question">質問</label>
     <textarea id="question" maxlength="500" required rows="3" placeholder="SQLiteにデータを保存するには？"></textarea>
     <div id="search-options">
-      <label for="top-k">検索結果の上位件数</label>
+      <label for="top-k">検索結果の上位件数（キーワード検索で使用）</label>
       <select id="top-k"><option>1</option><option selected>3</option><option>5</option></select>
     </div>
     <button id="send-button" type="submit">質問する</button>

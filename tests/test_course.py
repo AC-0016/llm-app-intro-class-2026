@@ -70,14 +70,25 @@ def test_each_complete_app(load_app, relative, stage):
         assert embeddings.build_embeddings() == 10
         modes.append('vector')
     if stage >= 7: modes.append('tools')
-    for mode in modes:
-        response = client.post('/api/ask', json={
-            'question':'SQLiteに保存するには？', 'mode':mode, 'search_text':'SQLite 保存'})
+    bodies = []
+    if relative == 'sample-app':
+        for use_keyword in [False, True]:
+            for use_tools in [False, True]:
+                bodies.append({'use_keyword': use_keyword, 'use_tools': use_tools})
+    else:
+        for mode in modes:
+            bodies.append({'mode': mode, 'search_text': 'SQLite 保存'})
+    for body in bodies:
+        body['question'] = 'SQLiteに保存するには？'
+        response = client.post('/api/ask', json=body)
         assert response.status_code == 200, response.text
         assert response.json()['answer']
     for question in ['', '   ', 'x'*501]:
         assert client.post('/api/ask',json={'question':question,'mode':'plain'}).status_code == 422
-    assert client.post('/api/ask',json={'question':'a','mode':'unknown'}).status_code == 422
+    if relative == 'sample-app':
+        assert client.post('/api/ask',json={'question':'a','use_tools':'unknown'}).status_code == 422
+    else:
+        assert client.post('/api/ask',json={'question':'a','mode':'unknown'}).status_code == 422
     assert client.post('/api/ask',json={'question':'a','top_k':100}).status_code == 422
 
 
@@ -98,11 +109,16 @@ def test_search_rebuild_and_tools(load_app):
     assert found[0]['score'] == 2
     assert len(found) <= 3
     client = TestClient(main.app)
-    response = client.post('/api/ask', json={'question': 'SQLiteに保存するには？', 'mode': 'keyword'})
+    response = client.post('/api/ask', json={'question': 'SQLiteに保存するには？', 'use_keyword': True})
     assert response.json()['keywords'] == ['sqlite', '保存']
-    assert client.post('/api/ask', json={'question': 'は？', 'mode': 'keyword'}).status_code == 400
-    for mode in ['vector', 'context']:
-        assert client.post('/api/ask', json={'question': 'a', 'mode': mode}).status_code == 422
+    assert response.json()['sources']
+    assert client.post('/api/ask', json={'question': 'は？', 'use_keyword': True}).status_code == 400
+    # 課題DBも選んだ場合は、検索語が無くても課題DBだけで回答する。
+    response = client.post('/api/ask', json={'question': 'は？', 'use_keyword': True, 'use_tools': True})
+    assert response.status_code == 200
+    assert response.json()['sources'] == []
+    response = client.post('/api/ask', json={'question': 'SQLiteに保存するには？'})
+    assert response.json()['sources'] == []
     assert len(functions.get_assignments('pending')) == 2
     assert len(functions.get_assignments('done')) == 1
     assert len(functions.get_assignments('all')) == 3
@@ -170,15 +186,20 @@ def test_real_sdk_request_and_function_roundtrip(load_app, monkeypatch):
     monkeypatch.setattr(llm,'make_client',lambda:sdk)
     monkeypatch.setattr(funcs,'make_client',lambda:sdk)
     assert llm.ask_plain('質問')['answer'] == '確認した回答'
-    result = funcs.ask_assignments('未提出は？')
+    result = funcs.ask_assignments('未提出は？', [])
     assert result['input_tokens'] == 24
     assert result['output_tokens'] == 12
     final_input = requests[-1]['input']
+    assert final_input[0]['content'] == '未提出は？'
     result_item = final_input[-1]
     assert result_item['call_id'] == 'call_test'
     assert len(json.loads(result_item['output'])) == 2
     assert 'tools' not in requests[-1]
-
+    # キーワード検索も選んだ場合は、検索した資料を質問と一緒に送る。
+    chunks = importlib.import_module('knowledge').search_keyword('第8回の提出物は？', 3)
+    funcs.ask_assignments('第8回の提出物は？', chunks)
+    assert '[資料' in requests[-1]['input'][0]['content']
+    assert 'tools' in requests[-2]
 
 def test_api_errors_and_incomplete(load_app, monkeypatch):
     main, _ = load_app('sample-app')

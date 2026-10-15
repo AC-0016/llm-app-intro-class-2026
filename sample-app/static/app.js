@@ -41,7 +41,8 @@ async function askQuestion(event) {
       headers: {'Content-Type': 'application/json'},
       body: JSON.stringify({
         question: question,
-        mode: document.getElementById('mode').value,
+        use_keyword: document.getElementById('use-keyword').checked,
+        use_tools: document.getElementById('use-tools').checked,
         top_k: Number(document.getElementById('top-k').value)
       })
     });
