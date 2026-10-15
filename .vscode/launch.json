@@ -1,8 +1,0 @@
-{
-  "version": "0.2.0",
-  "configurations": [
-    {"name": "完成版：キーワード検索アプリ", "type": "debugpy", "request": "launch", "program": "${workspaceFolder}/sample-app/keyword-app/main.py", "cwd": "${workspaceFolder}/sample-app/keyword-app", "console": "integratedTerminal"},
-    {"name": "完成版：制作の進捗アプリ", "type": "debugpy", "request": "launch", "program": "${workspaceFolder}/sample-app/progress-app/main.py", "cwd": "${workspaceFolder}/sample-app/progress-app", "console": "integratedTerminal"},
-    {"name": "開いているPythonファイル", "type": "debugpy", "request": "launch", "program": "${file}", "cwd": "${fileDirname}", "console": "integratedTerminal"}
-  ]
-}

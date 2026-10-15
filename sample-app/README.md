@@ -14,9 +14,7 @@ LLMの呼び出し方の基本と、LLMを使うWebアプリ2つの完成版で�
 毎回の授業開始時に、リポジトリのルートのターミナルでキーを非表示で入力し、同じターミナルから起動します。
 
 ```bash
-source .venv/bin/activate
-read -rsp "APIキー: " OPENAI_API_KEY; echo
-export OPENAI_API_KEY
+export OPENAI_API_KEY=sk-********
 cd sample-app/keyword-app   # 進捗アプリなら cd sample-app/progress-app
 python main.py
 ```
