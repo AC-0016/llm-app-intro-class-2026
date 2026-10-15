@@ -12,7 +12,7 @@ import httpx
 
 ROOT = Path(__file__).resolve().parents[1]
 MODULES = ['settings', 'main', 'llm', 'knowledge', 'embeddings', 'assignment_tools',
-           'documents', 'search', 'progress_db']
+           'documents', 'search', 'progress_db', 'one_shot', 'chat']
 
 
 @pytest.fixture
@@ -257,7 +257,7 @@ def test_api_errors_and_incomplete(load_app, monkeypatch):
     assert 'example.test' not in result.text
 
 
-@pytest.mark.parametrize('relative', ['sample-app/keyword-app', 'sample-app/progress-app', 'your-app'] + [
+@pytest.mark.parametrize('relative', ['sample-app/llm-call', 'sample-app/keyword-app', 'sample-app/progress-app', 'your-app'] + [
     f'session{i:02}/{kind}' for i in range(1, 9)
     for kind in ['exercise', 'solution']])
 def test_settings_use_only_session_environment(tmp_path, monkeypatch, relative):
@@ -287,6 +287,82 @@ def test_settings_use_only_session_environment(tmp_path, monkeypatch, relative):
         assert settings['DEMO_MODE'] is False
     assert settings['MODEL'] == 'session-model'
     assert settings['os'].getenv('OPENAI_API_KEY') == 'session-key'
+
+
+@pytest.fixture
+def llm_call(tmp_path, monkeypatch):
+    """llm-call のスクリプトを読み込み、APIへの送信内容を requests に記録する。"""
+    for name in MODULES:
+        sys.modules.pop(name, None)
+    destination = tmp_path / 'llm-call'
+    shutil.copytree(ROOT / 'sample-app/llm-call', destination,
+                    ignore=shutil.ignore_patterns('__pycache__'))
+    monkeypatch.syspath_prepend(str(destination))
+    monkeypatch.setenv('OPENAI_API_KEY', 'test-only')
+    requests = []
+    def handle(request):
+        body = json.loads(request.content)
+        requests.append(body)
+        assert body['model'] == 'gpt-6-luna'
+        assert body['store'] is False
+        return httpx.Response(200, json=response_json([message('回答' + str(len(requests)))]))
+    sdk = OpenAI(api_key='test-only', http_client=httpx.Client(transport=httpx.MockTransport(handle)))
+    def load(name):
+        module = importlib.import_module(name)
+        monkeypatch.setattr(module, 'OpenAI', lambda **kwargs: sdk)
+        return module
+    yield load, requests
+    for name in MODULES:
+        sys.modules.pop(name, None)
+
+
+def typed(monkeypatch, answers):
+    """input() に、answers を順に入力したことにする。"""
+    answers = list(answers)
+    monkeypatch.setattr('builtins.input', lambda prompt='': answers.pop(0))
+
+
+def test_one_shot_sends_only_question(llm_call, monkeypatch, capsys):
+    load, requests = llm_call
+    one_shot = load('one_shot')
+    typed(monkeypatch, ['私の名前は？'])
+    one_shot.main()
+    assert requests[0]['input'] == '私の名前は？'
+    output = capsys.readouterr().out
+    assert '回答: 回答1' in output
+    assert '入力 12 トークン' in output
+    typed(monkeypatch, [''])
+    one_shot.main()
+    assert len(requests) == 1
+    assert '1〜500文字' in capsys.readouterr().out
+    monkeypatch.delenv('OPENAI_API_KEY')
+    typed(monkeypatch, ['質問'])
+    one_shot.main()
+    assert 'OPENAI_API_KEY' in capsys.readouterr().out
+    assert len(requests) == 1
+
+
+def test_chat_sends_history(llm_call, monkeypatch, capsys):
+    load, requests = llm_call
+    chat = load('chat')
+    typed(monkeypatch, ['私の名前は佐藤です。', '私の名前は？', ''])
+    chat.main()
+    assert len(requests) == 2
+    assert requests[0]['input'] == [{'role': 'user', 'content': '私の名前は佐藤です。'}]
+    # 2回目は、1回目の質問と回答も一緒に送る。
+    assert requests[1]['input'] == [
+        {'role': 'user', 'content': '私の名前は佐藤です。'},
+        {'role': 'assistant', 'content': '回答1'},
+        {'role': 'user', 'content': '私の名前は？'},
+    ]
+    output = capsys.readouterr().out
+    assert '送った履歴 3 件' in output
+    assert '終わります。' in output
+    # 上限の回数で止まる。
+    typed(monkeypatch, ['質問'] * (chat.MAX_TURNS + 5))
+    chat.main()
+    assert len(requests) == 2 + chat.MAX_TURNS
+    assert len(requests[-1]['input']) == chat.MAX_TURNS * 2 - 1
 
 
 @pytest.mark.parametrize('kind', ['exercise', 'solution'])

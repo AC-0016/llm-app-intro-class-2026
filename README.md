@@ -30,7 +30,7 @@ sample-appと各回のexercise・solutionは実際のAPIを使います。your-a
 「授業資料アシスタント」で、資料なし・資料全体・キーワード検索・意味検索・課題DB参照を比較します。
 教材の授業案内と課題データは架空です。学習ノートは参照元の学習内容を踏まえ、新規に記述しています。
 
-- **sample-app/**：完成版。キーワード検索アプリ（keyword-app）と制作の進捗アプリ（progress-app）の2つ
+- **sample-app/**：完成版。LLM呼び出しの基本（llm-call）、キーワード検索アプリ（keyword-app）、制作の進捗アプリ（progress-app）
 - **session01〜08/slides.md・slides.pdf**：授業資料
 - **sessionXX/exercise/**：学生が編集する独立したコピー
 - **sessionXX/solution/**：その回までの完成例

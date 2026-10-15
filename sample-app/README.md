@@ -1,10 +1,11 @@
 # 完成版サンプル
 
-LLMを使うWebアプリを、機能ごとに2つに分けた完成版です。
-2つのフォルダは互いのファイルを参照せず、それぞれ単独で動きます。
+LLMの呼び出し方の基本と、LLMを使うWebアプリ2つの完成版です。
+3つのフォルダは互いのファイルを参照せず、それぞれ単独で動きます。
 
 | フォルダ | アプリ | 学ぶこと | ポート |
 |---|---|---|---|
+| `llm-call/` | LLM呼び出しの基本（ターミナルで動く） | 1回だけ呼ぶ方法と、会話の履歴をのせて呼ぶ方法 | なし |
 | `keyword-app/` | キーワード検索アプリ | RAG：Janomeで資料を探し、その資料をもとにLLMが答える | 8000 |
 | `progress-app/` | 制作の進捗アプリ | Function Calling：LLMが関数を選び、PythonがSQLiteを読む | 8001 |
 
@@ -20,6 +21,8 @@ cd sample-app/keyword-app   # 進捗アプリなら cd sample-app/progress-app
 python main.py
 ```
 
+`llm-call/` はWebサーバーを使わず、ターミナルで `python one_shot.py` または `python chat.py` を実行します。
+
 キーワード検索アプリはポート8000番、進捗アプリは8001番をCodespacesの「ポート」タブから開きます。ポートは非公開のまま使います。
 2つを同時に動かすときは、ターミナルを2つ使い、それぞれでキーを設定します。
 
@@ -27,6 +30,36 @@ python main.py
 - 生成モデルは **gpt-6-luna**。Responses API、reasoning.effort=none、最大出力600トークンを使います。
 - 終了時はサーバーをCtrl+Cで停止し、`unset OPENAI_API_KEY` を実行してターミナルを閉じます。
 - キーは `.env`、Codespaces Secrets、シェルの設定ファイルに保存しません。
+
+## LLM呼び出しの基本（llm-call）
+
+```bash
+cd sample-app/llm-call
+python one_shot.py   # 1回だけ呼び出す
+python chat.py       # 会話の履歴をのせて呼び出す（何も入力せずEnterで終わる）
+```
+
+### ファイルを読む順番
+
+1. `one_shot.py` の `ask_once()`：質問の文字列だけを `input` に入れて送る
+2. `chat.py` の `ask_with_history()` と `main()`：質問と回答を `history` のリストにため、毎回まとめて送る
+
+2つの違いは `input` に入れるものだけです。指示文（`settings.py` の `INSTRUCTIONS`）は同じです。
+
+| | `one_shot.py` | `chat.py` |
+|---|---|---|
+| `input` に入れるもの | 今回の質問の文字列 | これまでの質問と回答のリスト |
+| 前の会話 | 知らない | 知っている |
+| 入力トークン数 | ほぼ一定 | 質問を重ねるたびに増える |
+
+### 試すこと
+
+1. `python one_shot.py` で「私の名前は佐藤です。」と送る。もう一度実行して「私の名前は？」と送る。→ 名前は分からない。
+2. `python chat.py` で同じ2つを続けて送る。→ 前の会話を送っているので答えられる。
+3. `chat.py` で質問を重ね、表示される入力トークン数が増えていくことを確かめる。
+
+LLMそのものは前の会話を覚えていません。`store=False` でOpenAI側にも会話を保存しないため、覚えているように見えるのは、アプリが履歴を毎回送っているからです。
+`chat.py` は履歴が長くなりすぎないよう、質問を最大10回（`MAX_TURNS`）までにしています。
 
 ## キーワード検索アプリ（keyword-app）
 
