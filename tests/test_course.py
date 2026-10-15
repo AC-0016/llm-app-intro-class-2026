@@ -11,7 +11,8 @@ from openai import OpenAI
 import httpx
 
 ROOT = Path(__file__).resolve().parents[1]
-MODULES = ['settings', 'main', 'llm', 'knowledge', 'embeddings', 'assignment_tools']
+MODULES = ['settings', 'main', 'llm', 'knowledge', 'embeddings', 'assignment_tools',
+           'documents', 'search', 'progress_db']
 
 
 @pytest.fixture
@@ -35,8 +36,7 @@ def load_app(tmp_path, monkeypatch):
                         'data': [{'object': 'embedding', 'index': 0, 'embedding': [1.0, 0.0]}],
                         'usage': {'prompt_tokens': 1, 'total_tokens': 1}})
                 if 'tools' in body:
-                    output = [{'type': 'function_call', 'id': 'fc_test', 'call_id': 'call_test',
-                               'name': 'get_assignments', 'arguments': '{"status":"pending"}'}]
+                    output = [tool_call(body)]
                 else:
                     output = [message('テスト用のAPI回答')]
                 return httpx.Response(200, json=response_json(output))
@@ -49,7 +49,7 @@ def load_app(tmp_path, monkeypatch):
         sys.modules.pop(name, None)
 
 
-@pytest.mark.parametrize('relative,stage', [('sample-app',8), ('your-app',8)] +
+@pytest.mark.parametrize('relative,stage', [('your-app',8)] +
                          [(f'session{i:02}/solution',i) for i in [1,3,4,5,6,7,8]])
 def test_each_complete_app(load_app, relative, stage):
     main, directory = load_app(relative)
@@ -63,72 +63,98 @@ def test_each_complete_app(load_app, relative, stage):
     assert client.get('/.env').status_code == 404
     assert client.get('/classroom.db').status_code == 404
     modes = ['plain']
-    if stage >= 4 and relative != 'sample-app': modes.append('context')
+    if stage >= 4: modes.append('context')
     if stage >= 5: modes.append('keyword')
     if stage >= 6 and (directory / 'embeddings.py').exists():
         embeddings = importlib.import_module('embeddings')
         assert embeddings.build_embeddings() == 10
         modes.append('vector')
     if stage >= 7: modes.append('tools')
-    bodies = []
-    if relative == 'sample-app':
-        for use_keyword in [False, True]:
-            for use_tools in [False, True]:
-                bodies.append({'use_keyword': use_keyword, 'use_tools': use_tools})
-    else:
-        for mode in modes:
-            bodies.append({'mode': mode, 'search_text': 'SQLite 保存'})
-    for body in bodies:
-        body['question'] = 'SQLiteに保存するには？'
-        response = client.post('/api/ask', json=body)
+    for mode in modes:
+        response = client.post('/api/ask', json={
+            'question':'SQLiteに保存するには？', 'mode':mode, 'search_text':'SQLite 保存'})
         assert response.status_code == 200, response.text
         assert response.json()['answer']
     for question in ['', '   ', 'x'*501]:
         assert client.post('/api/ask',json={'question':question,'mode':'plain'}).status_code == 422
-    if relative == 'sample-app':
-        assert client.post('/api/ask',json={'question':'a','use_tools':'unknown'}).status_code == 422
-    else:
-        assert client.post('/api/ask',json={'question':'a','mode':'unknown'}).status_code == 422
+    assert client.post('/api/ask',json={'question':'a','mode':'unknown'}).status_code == 422
     assert client.post('/api/ask',json={'question':'a','top_k':100}).status_code == 422
 
 
-def test_search_rebuild_and_tools(load_app):
-    main, directory = load_app('sample-app')
-    knowledge = importlib.import_module('knowledge')
-    functions = importlib.import_module('assignment_tools')
-    assert len(knowledge.all_chunks()) == 10
-    assert knowledge.search_keyword('zzzz-no-match', 3) == []
-    assert not (directory / 'embeddings.py').exists()
-    assert knowledge.extract_words('SQLiteに保存するには？') == ['sqlite', '保存']
-    assert knowledge.extract_words('ページを閉じてもデータが残るのはなぜ？') == ['ページ', '閉じる', 'データ', '残る']
-    found = knowledge.search_keyword('SQLiteに保存するには？', 3)
+def test_keyword_app(load_app):
+    main, directory = load_app('sample-app/keyword-app')
+    documents = importlib.import_module('documents')
+    search = importlib.import_module('search')
+    client = TestClient(main.app)
+    assert client.get('/').status_code == 200
+    assert client.get('/.env').status_code == 404
+    assert len(main.documents) == 10
+    assert main.documents[0]['id'] == 1
+    # Janomeで検索語を取り出す。
+    assert search.extract_words('SQLiteに保存するには？') == ['sqlite', '保存']
+    assert search.extract_words('ページを閉じてもデータが残るのはなぜ？') == ['ページ', '閉じる', 'データ', '残る']
+    assert search.extract_words('は？') == []
+    found = search.search_documents(['sqlite', '保存'], main.documents, 3)
     headings = []
-    for chunk in found:
-        headings.append(chunk['heading'])
+    for document in found:
+        headings.append(document['heading'])
     assert 'SQLiteと永続化' in headings
     assert found[0]['score'] == 2
-    assert len(found) <= 3
-    client = TestClient(main.app)
-    response = client.post('/api/ask', json={'question': 'SQLiteに保存するには？', 'use_keyword': True})
-    assert response.json()['keywords'] == ['sqlite', '保存']
-    assert response.json()['sources']
-    assert client.post('/api/ask', json={'question': 'は？', 'use_keyword': True}).status_code == 400
-    # 課題DBも選んだ場合は、検索語が無くても課題DBだけで回答する。
-    response = client.post('/api/ask', json={'question': 'は？', 'use_keyword': True, 'use_tools': True})
-    assert response.status_code == 200
-    assert response.json()['sources'] == []
+    assert 'score' not in main.documents[0]
+    assert search.search_documents(['zzzz'], main.documents, 3) == []
+    # APIの入口。
     response = client.post('/api/ask', json={'question': 'SQLiteに保存するには？'})
+    assert response.status_code == 200, response.text
+    assert response.json()['answer'] == 'テスト用のAPI回答'
+    assert response.json()['keywords'] == ['sqlite', '保存']
+    assert len(response.json()['sources']) == 3
+    response = client.post('/api/ask', json={'question': 'zzzzについて'})
     assert response.json()['sources'] == []
-    assert len(functions.get_assignments('pending')) == 2
-    assert len(functions.get_assignments('done')) == 1
-    assert len(functions.get_assignments('all')) == 3
-    for name,args in [('delete_all','{}'), ('get_assignments','{"status":"bad"}'),
-                      ('get_assignments','{"status":"all","sql":"DROP TABLE"}'),
-                      ('get_assignments','[]')]:
-        with pytest.raises(ValueError): functions.execute_tool(name,args)
+    assert response.json()['input_tokens'] == 0
+    assert client.post('/api/ask', json={'question': 'は？'}).status_code == 400
+    for question in ['', '   ', 'x'*501]:
+        assert client.post('/api/ask', json={'question': question}).status_code == 422
+    # 資料を削除して読み直すと、その資料が消える。
     (directory/'data/03-api.md').unlink()
-    knowledge.init_documents()
-    assert len(knowledge.all_chunks()) == 7
+    assert len(documents.load_documents()) == 7
+    (directory/'data/04-long.md').write_text('# 長い資料\n## 長い見出し\n' + 'あ'*1001)
+    with pytest.raises(ValueError, match='長すぎます'):
+        documents.load_documents()
+
+
+def test_progress_app(load_app):
+    main, directory = load_app('sample-app/progress-app')
+    db = importlib.import_module('progress_db')
+    llm = importlib.import_module('llm')
+    client = TestClient(main.app)
+    assert client.get('/').status_code == 200
+    assert client.get('/progress.db').status_code == 404
+    todo = db.get_tasks('todo')
+    assert len(todo) == 3
+    assert todo[0] == {'id': 4, 'task': 'Janomeでキーワード検索を作る', 'done': False}
+    assert db.get_tasks('done')[0]['done'] is True
+    assert len(db.get_tasks('done')) == 3
+    assert len(db.get_tasks('all')) == 6
+    # 再起動しても変更済みの進捗を上書きしない。
+    import sqlite3
+    conn = sqlite3.connect(directory / 'progress.db')
+    conn.execute('UPDATE tasks SET done = 1 WHERE id = 4')
+    conn.commit()
+    conn.close()
+    db.init_db()
+    assert len(db.get_tasks('todo')) == 2
+    for name,args in [('delete_all','{}'), ('get_assignments','{"status":"pending"}'),
+                      ('get_tasks','{"status":"bad"}'),
+                      ('get_tasks','{"status":"all","sql":"DROP TABLE"}'),
+                      ('get_tasks','[]'), ('get_tasks','not json')]:
+        with pytest.raises(ValueError): llm.run_tool(name,args)
+    response = client.post('/api/ask', json={'question': 'まだの作業は？'})
+    assert response.status_code == 200, response.text
+    assert response.json()['answer'] == 'テスト用のAPI回答'
+    assert response.json()['tool_results'][0]['name'] == 'get_tasks'
+    assert len(response.json()['tool_results'][0]['rows']) == 2
+    for question in ['', '   ', 'x'*501]:
+        assert client.post('/api/ask', json={'question': question}).status_code == 422
 
 
 @pytest.mark.parametrize('stage,mode',[(5,'keyword'),(6,'vector'),(7,'tools'),(8,'plain')])
@@ -140,6 +166,14 @@ def test_exercises_fail_explicitly_until_completed(load_app, stage, mode):
         'question':'SQLite 保存','mode':mode,'search_text':'SQLite 保存'})
     assert response.status_code == 501
     assert 'TODO' in response.json()['detail']
+
+
+def tool_call(body):
+    # アプリが渡した関数で呼び出す。sample-appは進捗DB、各回のコピーは課題DB。
+    name = body['tools'][0]['name']
+    arguments = '{"status":"todo"}' if name == 'get_tasks' else '{"status":"pending"}'
+    return {'type': 'function_call', 'id': 'fc_test', 'call_id': 'call_test',
+            'name': name, 'arguments': arguments}
 
 
 def response_json(output, response_id='resp_test'):
@@ -155,9 +189,8 @@ def message(text):
 
 
 def test_real_sdk_request_and_function_roundtrip(load_app, monkeypatch):
-    main, _ = load_app('sample-app')
+    main, _ = load_app('sample-app/progress-app')
     llm = importlib.import_module('llm')
-    funcs = importlib.import_module('assignment_tools')
     requests = []
     def handle(request):
         body = json.loads(request.content)
@@ -166,47 +199,65 @@ def test_real_sdk_request_and_function_roundtrip(load_app, monkeypatch):
         assert body['reasoning'] == {'effort':'none'}
         assert body['store'] is False
         if 'tools' in body:
-            output = [{'type':'function_call','id':'fc_test','call_id':'call_test',
-                       'name':'get_assignments','arguments':'{"status":"pending"}'}]
+            output = [tool_call(body)]
         else:
             output = [message('確認した回答')]
         return httpx.Response(200,json=response_json(output))
     sdk = OpenAI(api_key='test-only',http_client=httpx.Client(transport=httpx.MockTransport(handle)))
     monkeypatch.setattr(llm,'make_client',lambda:sdk)
-    monkeypatch.setattr(funcs,'make_client',lambda:sdk)
-    assert llm.ask_plain('質問')['answer'] == '確認した回答'
-    result = funcs.ask_assignments('未提出は？', [])
+    result = llm.ask_with_tools('まだの作業は？')
+    assert result['answer'] == '確認した回答'
     assert result['input_tokens'] == 24
     assert result['output_tokens'] == 12
+    assert 'tools' in requests[0]
     final_input = requests[-1]['input']
-    assert final_input[0]['content'] == '未提出は？'
+    assert final_input[0]['content'] == 'まだの作業は？'
     result_item = final_input[-1]
     assert result_item['call_id'] == 'call_test'
-    assert len(json.loads(result_item['output'])) == 2
+    assert len(json.loads(result_item['output'])) == 3
     assert 'tools' not in requests[-1]
-    # キーワード検索も選んだ場合は、検索した資料を質問と一緒に送る。
-    chunks = importlib.import_module('knowledge').search_keyword('第8回の提出物は？', 3)
-    funcs.ask_assignments('第8回の提出物は？', chunks)
-    assert '[資料' in requests[-1]['input'][0]['content']
-    assert 'tools' in requests[-2]
+
+
+def test_keyword_app_sends_documents(load_app, monkeypatch):
+    main, _ = load_app('sample-app/keyword-app')
+    llm = importlib.import_module('llm')
+    requests = []
+    def handle(request):
+        requests.append(json.loads(request.content))
+        return httpx.Response(200,json=response_json([message('確認した回答')]))
+    sdk = OpenAI(api_key='test-only',http_client=httpx.Client(transport=httpx.MockTransport(handle)))
+    monkeypatch.setattr(llm,'make_client',lambda:sdk)
+    result = llm.ask_with_documents('質問です', main.documents[:2])
+    assert result == {'answer': '確認した回答', 'input_tokens': 12, 'output_tokens': 6}
+    assert requests[0]['store'] is False
+    assert '[資料1]' in requests[0]['input']
+    assert '[資料2]' in requests[0]['input']
+    assert requests[0]['input'].endswith('質問:\n質問です')
+
 
 def test_api_errors_and_incomplete(load_app, monkeypatch):
-    main, _ = load_app('sample-app')
+    main, _ = load_app('sample-app/keyword-app')
     llm = importlib.import_module('llm')
+    question = {'question': 'SQLiteに保存するには？'}
+    incomplete = SimpleNamespace(status='incomplete', output_text='途中')
+    client_stub = SimpleNamespace(responses=SimpleNamespace(create=lambda **kwargs: incomplete))
+    original_make_client = llm.make_client
+    monkeypatch.setattr(llm, 'make_client', lambda: client_stub)
     with pytest.raises(ValueError):
-        llm.response_result(SimpleNamespace(status='incomplete',output_text='途中'))
+        llm.ask_with_documents('質問', main.documents[:1])
+    monkeypatch.setattr(llm, 'make_client', original_make_client)
     monkeypatch.delenv('OPENAI_API_KEY', raising=False)
-    assert TestClient(main.app).post('/api/ask',json={'question':'a','mode':'plain'}).status_code == 400
+    assert TestClient(main.app).post('/api/ask', json=question).status_code == 400
     from openai import APITimeoutError
-    def fail(question):
+    def fail(question, documents):
         raise APITimeoutError(request=httpx.Request('POST','https://example.test'))
-    monkeypatch.setattr(main,'ask_plain',fail)
-    result = TestClient(main.app).post('/api/ask',json={'question':'a','mode':'plain'})
+    monkeypatch.setattr(main,'ask_with_documents',fail)
+    result = TestClient(main.app).post('/api/ask', json=question)
     assert result.status_code == 504
     assert 'example.test' not in result.text
 
 
-@pytest.mark.parametrize('relative', ['sample-app', 'your-app'] + [
+@pytest.mark.parametrize('relative', ['sample-app/keyword-app', 'sample-app/progress-app', 'your-app'] + [
     f'session{i:02}/{kind}' for i in range(1, 9)
     for kind in ['exercise', 'solution']])
 def test_settings_use_only_session_environment(tmp_path, monkeypatch, relative):

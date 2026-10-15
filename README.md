@@ -17,9 +17,7 @@ HTML/CSS/JavaScript、Python・FastAPI、SQLite、fetch、Gitの基礎を既習�
 source .venv/bin/activate
 read -rsp "APIキー: " OPENAI_API_KEY; echo
 export OPENAI_API_KEY
-cd sample-app
-python init_db.py
-python build_index.py
+cd sample-app/keyword-app   # 進捗アプリなら cd sample-app/progress-app（8001番）
 python main.py
 ```
 
@@ -32,7 +30,7 @@ sample-appと各回のexercise・solutionは実際のAPIを使います。your-a
 「授業資料アシスタント」で、資料なし・資料全体・キーワード検索・意味検索・課題DB参照を比較します。
 教材の授業案内と課題データは架空です。学習ノートは参照元の学習内容を踏まえ、新規に記述しています。
 
-- **sample-app/**：最初に作成した完成版
+- **sample-app/**：完成版。キーワード検索アプリ（keyword-app）と制作の進捗アプリ（progress-app）の2つ
 - **session01〜08/slides.md・slides.pdf**：授業資料
 - **sessionXX/exercise/**：学生が編集する独立したコピー
 - **sessionXX/solution/**：その回までの完成例

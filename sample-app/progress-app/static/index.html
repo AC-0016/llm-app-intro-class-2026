@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>制作の進捗アプリ</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="app.js" defer></script>
+</head>
+<body>
+<main>
+  <header>
+    <p class="eyebrow">LLM APP INTRO / 2026</p>
+    <h1>制作の進捗アプリ</h1>
+    <p>LLMが必要な関数を選び、Pythonが進捗DBを読んで、その結果をもとにLLMが答えます。</p>
+  </header>
+  <p>質問とDBの結果を外部APIへ送信します。進捗のデータは架空です。</p>
+
+  <form id="question-form">
+    <label for="question">質問</label>
+    <textarea id="question" maxlength="500" required rows="3" placeholder="まだ終わっていない作業は？"></textarea>
+    <button id="send-button" type="submit">質問する</button>
+  </form>
+  <p id="status" role="status" aria-live="polite"></p>
+
+  <section>
+    <h2>回答</h2>
+    <div id="answer">質問すると、ここに回答が表示されます。</div>
+  </section>
+
+  <section>
+    <h2>LLMが呼んだ関数とDBの結果</h2>
+    <p>LLMが選んだ関数と引数、Pythonが実行して得た結果です。回答と見比べてください。</p>
+    <div id="tool-results">-</div>
+  </section>
+
+  <footer>教材用・1問ずつ回答します。個人情報や秘密情報を入力しないでください。</footer>
+</main>
+</body>
+</html>

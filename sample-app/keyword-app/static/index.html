@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>キーワード検索アプリ</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="app.js" defer></script>
+</head>
+<body>
+<main>
+  <header>
+    <p class="eyebrow">LLM APP INTRO / 2026</p>
+    <h1>キーワード検索アプリ</h1>
+    <p>質問から検索語を取り出して授業資料を探し、その資料をもとにLLMが答えます。</p>
+  </header>
+  <p>質問と見つかった資料を外部APIへ送信します。</p>
+
+  <form id="question-form">
+    <label for="question">質問</label>
+    <textarea id="question" maxlength="500" required rows="3" placeholder="SQLiteにデータを保存するには？"></textarea>
+    <button id="send-button" type="submit">質問する</button>
+  </form>
+  <p id="status" role="status" aria-live="polite"></p>
+
+  <section>
+    <h2>回答</h2>
+    <div id="answer">質問すると、ここに回答が表示されます。</div>
+  </section>
+
+  <section>
+    <h2>検索語</h2>
+    <p>Janomeが質問から取り出した単語です。</p>
+    <p id="keywords">-</p>
+  </section>
+
+  <section>
+    <h2>LLMに渡した資料</h2>
+    <p>回答に付いた資料IDと本文を見比べてください。資料を渡しても、回答が正しいとは限りません。</p>
+    <ul id="sources"></ul>
+  </section>
+
+  <footer>教材用・1問ずつ回答します。個人情報や秘密情報を入力しないでください。</footer>
+</main>
+</body>
+</html>
