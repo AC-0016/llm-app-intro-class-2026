@@ -12,13 +12,13 @@
   <header>
     <p class="eyebrow">LLM APP INTRO / 2026</p>
     <h1>制作の進捗アプリ</h1>
-    <p>LLMが必要な関数を選び、Pythonが進捗DBを読んで、その結果をもとにLLMが答えます。</p>
+    <p>LLMが必要な関数を選び、Pythonが進捗DBを読んだり書き換えたりして、その結果をもとにLLMが答えます。</p>
   </header>
   <p>質問とDBの結果を外部APIへ送信します。進捗のデータは架空です。</p>
 
   <form id="question-form">
     <label for="question">質問</label>
-    <textarea id="question" maxlength="500" required rows="3" placeholder="まだ終わっていない作業は？"></textarea>
+    <textarea id="question" maxlength="500" required rows="3" placeholder="まだ終わっていない作業は？ / 「READMEを書く」を追加して / 4番を完了にして"></textarea>
     <button id="send-button" type="submit">質問する</button>
   </form>
   <p id="status" role="status" aria-live="polite"></p>

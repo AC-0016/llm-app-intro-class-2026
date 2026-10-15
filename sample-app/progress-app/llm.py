@@ -1,34 +1,68 @@
-"""OpenAIのAPIを呼び出す。LLMに関数（get_tasks）を選ばせ、Pythonで実行して回答させる。
+"""OpenAIのAPIを呼び出す。LLMに関数を選ばせ、Pythonで実行して回答させる。
 
-流れ
-  1回目: 質問と使える関数をLLMに送る → LLMが「get_tasks を status='todo' で呼んで」と返す
-  実行 : Pythonが関数名と引数を確かめてから、DBを読む
-  2回目: DBの結果をLLMに送る → LLMが結果をもとに回答を書く
+流れ（1つの質問で、関数は1回だけ呼ぶ）
+  1回目: 質問と使える関数をLLMに送る → LLMが「get_tasks を status='todo' で呼んで」のように返す
+  実行 : Pythonが関数名と引数を確かめてから、DBを読む・書き換える
+  2回目: 関数の結果をLLMに送る → LLMが結果をもとに回答を書く
 """
 import json
 import os
 from openai import OpenAI
-from progress_db import get_tasks
+from progress_db import get_tasks, add_task, set_task_done
 
 # LLMに教える「使える関数」の説明。LLMはこの説明を読んで、呼ぶかどうかと引数を決める。
-TOOLS = [{
-    'type': 'function',
-    'name': 'get_tasks',
-    'description': 'Webアプリ制作の進捗（やることと完了フラグ）を調べる。'
-                   'status は all（全件）・todo（未完了）・done（完了）。',
-    'parameters': {
-        'type': 'object',
-        'properties': {'status': {'type': 'string', 'enum': ['all', 'todo', 'done']}},
-        'required': ['status'],
-        'additionalProperties': False,
+TOOLS = [
+    {
+        'type': 'function',
+        'name': 'get_tasks',
+        'description': 'Webアプリ制作の進捗（id・やること・完了フラグ）を調べる。'
+                       'status は all（全件）・todo（未完了）・done（完了）。',
+        'parameters': {
+            'type': 'object',
+            'properties': {'status': {'type': 'string', 'enum': ['all', 'todo', 'done']}},
+            'required': ['status'],
+            'additionalProperties': False,
+        },
+        'strict': True,
     },
-    'strict': True,
-}]
+    {
+        'type': 'function',
+        'name': 'add_task',
+        'description': '新しいやることを、未完了で追加する。利用者が追加を頼んだときだけ使う。',
+        'parameters': {
+            'type': 'object',
+            'properties': {'task': {'type': 'string', 'description': '追加するやること（100文字以内）'}},
+            'required': ['task'],
+            'additionalProperties': False,
+        },
+        'strict': True,
+    },
+    {
+        'type': 'function',
+        'name': 'set_task_done',
+        'description': 'やることの完了フラグを変える。done が true なら完了、false なら未完了にする。'
+                       '利用者がidを示して変更を頼んだときだけ使う。',
+        'parameters': {
+            'type': 'object',
+            'properties': {
+                'task_id': {'type': 'integer', 'description': 'やることのid'},
+                'done': {'type': 'boolean'},
+            },
+            'required': ['task_id', 'done'],
+            'additionalProperties': False,
+        },
+        'strict': True,
+    },
+]
 
 # LLMへの指示。
 INSTRUCTIONS = (
-    'Webアプリ制作の進捗は、必ず get_tasks の結果だけを根拠にしてください。'
-    '結果にないことは推測しないでください。日本語で簡潔に回答してください。'
+    'Webアプリ制作の進捗は、必ず関数の結果だけを根拠にしてください。'
+    '結果にないことは推測しないでください。'
+    '進捗の追加や変更は、利用者がはっきり頼んだときだけ行ってください。'
+    '複数の関数を呼ぶ必要がある場合は、1つだけ呼んでください。2つ目は呼ばなくてよいです。'
+    '完了フラグを変えるときは、利用者が示したidを使い、idを推測しないでください。'
+    '日本語で簡潔に回答してください。'
 )
 
 
@@ -43,19 +77,34 @@ def run_tool(name, arguments, database):
     """LLMが呼びたいと言ってきた関数を、確かめてから実行する。database はDBファイルの場所。
 
     LLMの出力は信用せず、許可した関数名と引数の形だけを受け付ける。
-    eval() や exec() は使わない。
+    eval() や exec() は使わない。値の中身（文字数や型）は、progress_db.py の各関数が確かめる。
     """
-    if name != 'get_tasks':
-        raise ValueError('許可していない関数です。')
     # arguments は '{"status": "todo"}' のようなJSONの文字列。
     args = json.loads(arguments)
-    if not isinstance(args, dict) or list(args.keys()) != ['status']:
+    if not isinstance(args, dict):
         raise ValueError('引数の形が正しくありません。')
-    return get_tasks(database, args['status'])
+
+    if name == 'get_tasks':
+        check_keys(args, ['status'])
+        return get_tasks(database, args['status'])
+    elif name == 'add_task':
+        check_keys(args, ['task'])
+        return add_task(database, args['task'])
+    elif name == 'set_task_done':
+        check_keys(args, ['task_id', 'done'])
+        return set_task_done(database, args['task_id'], args['done'])
+    else:
+        raise ValueError('許可していない関数です。')
+
+
+def check_keys(args, expected_keys):
+    """引数の名前が、決めたものとちょうど同じかを確かめる。余分な引数や足りない引数は受け付けない。"""
+    if sorted(args.keys()) != sorted(expected_keys):
+        raise ValueError('引数の形が正しくありません。')
 
 
 def ask_with_tools(question, model, database):
-    """質問に答える。必要ならLLMに get_tasks を呼ばせる。
+    """質問に答える。必要ならLLMに関数を1回だけ呼ばせる。
 
     model は使うモデルの名前、database は進捗DBのファイルの場所。
     """

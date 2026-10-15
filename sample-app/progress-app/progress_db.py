@@ -1,4 +1,4 @@
-"""Webアプリ制作の進捗をSQLiteに保存し、読み出す。
+"""Webアプリ制作の進捗をSQLiteに保存し、読み出す・追加する・完了フラグを変える。
 
 tasks テーブル
   id   : 番号
@@ -57,3 +57,59 @@ def get_tasks(database, status):
         # DBの1/0を、True/Falseに直して返す。
         tasks.append({'id': row[0], 'task': row[1], 'done': row[2] == 1})
     return tasks
+
+
+# やることの文字数の上限。
+MAX_TASK_LENGTH = 100
+
+
+def add_task(database, task):
+    """新しいやることを、未完了（done = 0）で追加する。
+
+    返す値は、追加した行を入れたリスト。例: [{'id': 7, 'task': 'READMEを書く', 'done': False}]
+    get_tasks() と同じ形にして、画面で同じように表示できるようにする。
+    """
+    # LLMが作った値なので、保存する前に必ず確かめる。
+    if not isinstance(task, str):
+        raise ValueError('やることは文字列で指定してください。')
+    task = task.strip()
+    if task == '' or len(task) > MAX_TASK_LENGTH:
+        raise ValueError(f'やることは1〜{MAX_TASK_LENGTH}文字にしてください。')
+
+    conn = sqlite3.connect(database)
+    cursor = conn.cursor()
+    # id を書かないと、SQLiteが今ある一番大きいidの次の番号を付ける。
+    # 値は ? の場所に別の引数で渡す（SQLの文字列に直接つなげない）。
+    cursor.execute('INSERT INTO tasks (task, done) VALUES (?, 0)', (task,))
+    new_id = cursor.lastrowid  # 今追加した行のid
+    conn.commit()
+    conn.close()
+    return [{'id': new_id, 'task': task, 'done': False}]
+
+
+def set_task_done(database, task_id, done):
+    """task_id のやることの完了フラグを、done（True なら完了、False なら未完了）にする。
+
+    返す値は、変更した後の行を入れたリスト。例: [{'id': 4, 'task': 'Janomeでキーワード検索を作る', 'done': True}]
+    """
+    # LLMが作った値なので、保存する前に必ず確かめる。
+    # True/False は Python では整数の仲間でもあるので、先に bool かどうかを調べて除く。
+    if isinstance(task_id, bool) or not isinstance(task_id, int):
+        raise ValueError('task_id は整数で指定してください。')
+    if not isinstance(done, bool):
+        raise ValueError('done は true か false で指定してください。')
+
+    conn = sqlite3.connect(database)
+    cursor = conn.cursor()
+    # DBには1（True）か0（False）で保存する。
+    done_value = 1 if done else 0
+    cursor.execute('UPDATE tasks SET done = ? WHERE id = ?', (done_value, task_id))
+    changed = cursor.rowcount  # 変更した行の数。そのidが無ければ0になる
+    conn.commit()
+    if changed == 0:
+        conn.close()
+        raise ValueError(f'id {task_id} のやることはありません。')
+    cursor.execute('SELECT id, task, done FROM tasks WHERE id = ?', (task_id,))
+    row = cursor.fetchone()
+    conn.close()
+    return [{'id': row[0], 'task': row[1], 'done': row[2] == 1}]
