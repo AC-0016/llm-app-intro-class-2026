@@ -63,7 +63,7 @@ def test_each_complete_app(load_app, relative, stage):
     assert client.get('/.env').status_code == 404
     assert client.get('/classroom.db').status_code == 404
     modes = ['plain']
-    if stage >= 4: modes.append('context')
+    if stage >= 4 and relative != 'sample-app': modes.append('context')
     if stage >= 5: modes.append('keyword')
     if stage >= 6 and (directory / 'embeddings.py').exists():
         embeddings = importlib.import_module('embeddings')
@@ -101,7 +101,8 @@ def test_search_rebuild_and_tools(load_app):
     response = client.post('/api/ask', json={'question': 'SQLiteに保存するには？', 'mode': 'keyword'})
     assert response.json()['keywords'] == ['sqlite', '保存']
     assert client.post('/api/ask', json={'question': 'は？', 'mode': 'keyword'}).status_code == 400
-    assert client.post('/api/ask', json={'question': 'a', 'mode': 'vector'}).status_code == 422
+    for mode in ['vector', 'context']:
+        assert client.post('/api/ask', json={'question': 'a', 'mode': mode}).status_code == 422
     assert len(functions.get_assignments('pending')) == 2
     assert len(functions.get_assignments('done')) == 1
     assert len(functions.get_assignments('all')) == 3

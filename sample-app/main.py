@@ -9,7 +9,7 @@ from pydantic import BaseModel, Field
 from openai import APIError, APITimeoutError, RateLimitError
 from settings import BASE_DIR, DATABASE
 from llm import ask_plain, ask_with_context, build_context
-from knowledge import init_documents, all_chunks, search_keyword, extract_words
+from knowledge import init_documents, search_keyword, extract_words
 from assignment_tools import init_assignments, ask_assignments
 
 # DBが無い初回だけ資料を登録。更新はサーバーを止めてinit_db.pyを実行する。
@@ -22,7 +22,7 @@ app = FastAPI(title='授業資料アシスタント')
 
 class Question(BaseModel):
     question: str = Field(min_length=1, max_length=500)
-    mode: Literal['plain', 'context', 'keyword', 'tools'] = 'keyword'
+    mode: Literal['plain', 'keyword', 'tools'] = 'keyword'
     top_k: int = Field(default=3, ge=1, le=5)
 
 
@@ -58,9 +58,6 @@ def ask(request: Question):
         # ここが処理の分かれ道。選んだ方式だけを実行する。
         if request.mode == 'plain':
             result = ask_plain(question)
-        elif request.mode == 'context':
-            chunks = all_chunks()
-            result = ask_with_context(question, chunks)
         elif request.mode == 'keyword':
             keywords = extract_words(question)
             if not keywords:
