@@ -118,7 +118,7 @@ LLMそのものは前の会話を覚えていません。`store=False` でOpenAI
 
 ## 資料（Marp形式のスライド）
 
-keyword-app と vector-app は、それぞれの `data/` にある第1回のスライド（`session01/slides.md` のコピー、`session01.md`）を資料にします。
+keyword-app と vector-app は、それぞれの `data/` にある第1回のスライド（`session01/slides01.md` のコピー、`session01.md`）を資料にします。
 `init_db.py` がMarp形式のMarkdownを次のように読み、DBに保存します。
 
 | Markdownの書き方 | 資料としての扱い |
@@ -135,7 +135,7 @@ keyword-app と vector-app は、それぞれの `data/` にある第1回のス�
 - スライドを足したり直したりしたら、サーバーを止めて `python init_db.py` を実行し、サーバーを起動し直します。
 - `init_db.py` は実行するたびに `documents` テーブルを作り直します。古い資料は残りません。
 - keyword-app で `search.py` の単語の取り出し方（`STOP_WORDS` など）を変えたときも、`python init_db.py` で単語を作り直します。
-- `session01/slides.md` を直しても、`data/` のコピーは変わりません。必要ならコピーし直します。
+- `session01/slides01.md` を直しても、`data/` のコピーは変わりません。必要ならコピーし直します。
 - 資料IDは `init_db.py` が順番に付けるため、スライドを増減すると変わります。評価にはファイル名と何枚目かも記録します。
 
 ### DBのスキーマ（`documents.db` の `documents` テーブル）
