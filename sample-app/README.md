@@ -21,6 +21,8 @@ cd sample-app/keyword-app   # ほかのアプリなら cd sample-app/chat-app �
 python main.py
 ```
 
+keyword-app と vector-app は、最初に1回 `python init_db.py` で資料のDB（`documents.db`）を作ってから `python main.py` を実行します。
+
 `llm-call/` はWebサーバーを使わず、ターミナルで `python one_shot.py` または `python chat.py` を実行します。
 
 キーワード検索アプリはポート8000番、進捗アプリは8001番、チャットアプリは8002番、ベクトル検索アプリは8003番をCodespacesの「ポート」タブから開きます。ポートは非公開のまま使います。
@@ -91,17 +93,19 @@ LLMそのものは前の会話を覚えていません。`store=False` でOpenAI
 
 ### ファイルを読む順番
 
-1. `main.py` の `ask()`：質問を受け取り、①検索語を取り出す ②資料を探す ③LLMに答えさせる
-2. `documents.py`：Marp形式のスライド（`data/*.md`）を、スライド1枚ずつの資料に分ける
-3. `search.py`：Janomeで単語を取り出し、一致した数で資料を並べる
-4. `llm.py`：資料と質問をLLMに送る
-5. `static/app.js` の `askQuestion()`：送信と表示
+1. `init_db.py`：Marp形式のスライド（`data/*.md`）をスライド1枚ずつに分け、Janomeで単語に分けて `documents.db` に保存する
+2. `main.py` の `load_documents()`：起動時にDBから資料と単語を読み込む
+3. `main.py` の `ask()`：質問を受け取り、①検索語を取り出す ②資料を探す ③LLMに答えさせる
+4. `search.py`：Janomeで単語を取り出し、一致した数で資料を並べる
+5. `llm.py`：資料と質問をLLMに送る
+6. `static/app.js` の `askQuestion()`：送信と表示
 
 ### 検索の仕組み
 
 1. `extract_words()` が質問をJanomeで単語に分け、名詞・動詞・形容詞の基本形を取り出す。
    助詞・記号、「の」のような意味の薄い語、「する」のようにどこにでも出る語は除く。
-2. `search_documents()` が各資料も同じ方法で単語に分け、質問の単語がいくつ含まれるかを数える。
+2. `search_documents()` が、各資料の単語（`init_db.py` が同じ `extract_words()` で作ってDBに保存したもの）に、質問の単語がいくつ含まれるかを数える。
+   資料の形態素解析は `init_db.py` で1回だけ行うので、質問のときは質問だけを解析すればよい。
 3. 一致した数の多い順に、上位3件（`main.py` の `TOP_K`）をLLMへ渡す。1件も無ければAPIを呼ばない。
 
 | 質問 | 取り出される検索語 | 見つかるスライド（上位） |
@@ -115,7 +119,7 @@ LLMそのものは前の会話を覚えていません。`store=False` でOpenAI
 ## 資料（Marp形式のスライド）
 
 keyword-app と vector-app は、それぞれの `data/` にある第1回のスライド（`session01/slides.md` のコピー、`session01.md`）を資料にします。
-Marp形式のMarkdownを次のように読みます（`documents.py`）。
+`init_db.py` がMarp形式のMarkdownを次のように読み、DBに保存します。
 
 | Markdownの書き方 | 資料としての扱い |
 |---|---|
@@ -127,10 +131,26 @@ Marp形式のMarkdownを次のように読みます（`documents.py`）。
 | `![画像](…)` | 画像なので読まない |
 | ```` ``` ```` で囲まれたコード | 中の `#` や `---` も含め、本文としてそのまま読む |
 
-- スライド1枚の本文は1000文字以内にします。
-- 資料は起動時に読み込むので、スライドを足したり直したりしたら、サーバーを再起動します。
+- スライド1枚の本文は1000文字以内にします。超えると、DBを変える前に `init_db.py` が止まります。
+- スライドを足したり直したりしたら、サーバーを止めて `python init_db.py` を実行し、サーバーを起動し直します。
+- `init_db.py` は実行するたびに `documents` テーブルを作り直します。古い資料は残りません。
+- keyword-app で `search.py` の単語の取り出し方（`STOP_WORDS` など）を変えたときも、`python init_db.py` で単語を作り直します。
 - `session01/slides.md` を直しても、`data/` のコピーは変わりません。必要ならコピーし直します。
-- 資料IDは起動時に順番に付けるため、スライドを増減すると変わります。評価にはファイル名と何枚目かも記録します。
+- 資料IDは `init_db.py` が順番に付けるため、スライドを増減すると変わります。評価にはファイル名と何枚目かも記録します。
+
+### DBのスキーマ（`documents.db` の `documents` テーブル）
+
+| 列 | 型 | 内容 |
+|---|---|---|
+| id | INTEGER | 資料ID（1から順に付ける） |
+| source | TEXT | 元のファイル名（例：`session01.md`） |
+| slide | INTEGER | 何枚目のスライドか（Marpのページ番号と同じ） |
+| title | TEXT | スライド全体の題名（最初のスライドの見出し） |
+| heading | TEXT | そのスライドの見出し |
+| body | TEXT | そのスライドの本文 |
+| words | TEXT | keyword-appのみ。題名・見出し・本文から取り出した検索用の単語のリストを、JSONの文字列にしたもの（例：`["学習", "推論"]`） |
+| vector | TEXT | vector-appのみ。ベクトル（数値のリスト）をJSONの文字列にしたもの |
+| embedding_model | TEXT | vector-appのみ。ベクトルを作ったモデルの名前 |
 
 ## ベクトル検索アプリ（vector-app）
 
@@ -138,15 +158,16 @@ keyword-app と同じ形で、検索の部分だけをベクトル検索に変�
 
 ### ファイルを読む順番
 
-1. `main.py`：起動時に全部の資料をベクトルにする。`ask()` は ①質問をベクトルにする ②近い資料を探す ③LLMに答えさせる
-2. `llm.py` の `embed_texts()`：Embedding APIで文章をベクトル（数値のリスト）にする
-3. `search.py` の `cosine_similarity()`：2つのベクトルの向きの近さを計算する
-4. `search.py` の `search_documents()`：類似度の高い順に資料を並べる
-5. `documents.py`・`static/`：keyword-app とほぼ同じ
+1. `init_db.py`：スライドを資料に分け、全部の資料をベクトルにして `documents.db` に保存する
+2. `main.py`：起動時にDBから資料とベクトルを読み込む。`ask()` は ①質問をベクトルにする ②近い資料を探す ③LLMに答えさせる
+3. `llm.py` の `embed_texts()`：Embedding APIで文章をベクトル（数値のリスト）にする
+4. `search.py` の `cosine_similarity()`：2つのベクトルの向きの近さを計算する
+5. `search.py` の `search_documents()`：類似度の高い順に資料を並べる
+6. `static/`：keyword-app とほぼ同じ
 
 ### 検索の仕組み
 
-1. 起動時に、各スライドの「題名・見出し・本文」を `text-embedding-3-small` でベクトルにしておく（1回のAPI呼び出し）。
+1. `init_db.py` で、各スライドの「題名・見出し・本文」を `text-embedding-3-small` でベクトルにし、DBに保存しておく（1回のAPI呼び出し）。
 2. 質問が来たら、質問も同じモデルでベクトルにする。
 3. 質問のベクトルと各資料のベクトルのコサイン類似度を計算し、高い順に上位3件（`TOP_K`）をLLMへ渡す。
    類似度が0.3（`MIN_SIMILARITY`）より小さい資料は渡さない。この値は目安なので、画面に出る類似度を見て調整する。
@@ -155,11 +176,11 @@ keyword-app と同じ形で、検索の部分だけをベクトル検索に変�
 |---|---|---|
 | 比べ方 | 同じ単語がいくつあるか | ベクトルの向きがどれだけ近いか |
 | 言い換え（「保管」と「保存」） | 見つからない | 見つかることがある |
-| 検索にかかるAPI | なし | 起動時に資料の分、質問のたびに質問の分 |
-| 起動にAPIキー | いらない（質問時に必要） | 必要（起動時に資料をベクトルにするため） |
+| 検索にかかるAPI | なし | `init_db.py` の実行時に資料の分、質問のたびに質問の分 |
+| `init_db.py` にAPIキー | いらない | 必要（資料をベクトルにするため） |
 
-APIキーを設定せずに起動すると、資料をベクトルにできないため、エラーで止まります。
-ベクトルはメモリに置くだけでファイルに保存しないので、再起動のたびにEmbedding APIを呼びます。
+ベクトルはDBに保存するので、サーバーを再起動しても資料のEmbedding APIは呼びません。
+`EMBEDDING_MODEL` を変えたときは、DBのベクトルと質問のベクトルを比べられないため、`main.py` が起動時に止まります。`python init_db.py` で作り直します。
 
 ## 制作の進捗アプリ（progress-app）
 

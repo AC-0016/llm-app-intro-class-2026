@@ -33,6 +33,7 @@ def search_documents(question_vector, documents, top_k, min_similarity):
             results.append({
                 'id': document['id'],
                 'source': document['source'],
+                'slide': document['slide'],
                 'title': document['title'],
                 'heading': document['heading'],
                 'body': document['body'],

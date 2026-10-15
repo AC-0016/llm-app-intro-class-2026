@@ -1,16 +1,17 @@
 """ベクトル検索アプリ（Embedding + LLM）。
 
-実行: python main.py
+実行: python init_db.py（最初と、資料を直したとき）→ python main.py
 ブラウザ: ポート8003番
 """
+import json
 import os
+import sqlite3
 from pathlib import Path
 import uvicorn
 from fastapi import FastAPI, HTTPException
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
 from openai import APIError, APITimeoutError, RateLimitError
-from documents import load_documents
 from search import search_documents
 from llm import embed_texts, ask_with_documents
 
@@ -20,8 +21,8 @@ from llm import embed_texts, ask_with_documents
 # このファイルがあるフォルダ。資料や画面のファイルを探すときの基準にする。
 BASE_DIR = Path(__file__).resolve().parent
 
-# 授業資料のMarkdownを置くフォルダ。
-DATA_DIR = BASE_DIR / 'data'
+# 資料とベクトルを保存したSQLiteのファイル。python init_db.py で作る。
+DATABASE = BASE_DIR / 'documents.db'
 
 # 回答に使うモデル。環境変数 OPENAI_MODEL があれば、そちらを使う。
 MODEL = os.getenv('OPENAI_MODEL', 'gpt-6-luna')
@@ -38,15 +39,39 @@ MIN_SIMILARITY = 0.3
 
 # ===== ここからアプリ =====
 
-# 起動時に data/ の資料を読み込み、全部の資料をベクトルにしておく。
-# 資料を直したら、サーバーを再起動する（そのたびにEmbedding APIを呼ぶ）。
-documents = load_documents(DATA_DIR)
-texts = []
-for document in documents:
-    texts.append(document['title'] + '\n' + document['heading'] + '\n' + document['body'])
-vectors = embed_texts(texts, EMBEDDING_MODEL)
-for i in range(len(documents)):
-    documents[i]['vector'] = vectors[i]  # 資料と同じ順番でベクトルが返ってくる
+
+def load_documents(database, embedding_model):
+    """DBから資料とベクトルを全部読み、辞書のリストにして返す。"""
+    if not database.exists():
+        # sqlite3.connect() は、ファイルが無いと空のDBを作ってしまうので、先に確かめる。
+        raise SystemExit(f'{database.name} がありません。先に python init_db.py を実行してください。')
+    conn = sqlite3.connect(database)
+    cursor = conn.cursor()
+    cursor.execute('SELECT id, source, slide, title, heading, body, vector, embedding_model'
+                   ' FROM documents ORDER BY id')
+    rows = cursor.fetchall()
+    conn.close()
+
+    documents = []
+    for row in rows:
+        # 別のモデルで作ったベクトルとは比べられないので、作り直してもらう。
+        if row[7] != embedding_model:
+            raise SystemExit(f'DBのベクトルは {row[7]} で作られています。'
+                             f'python init_db.py を実行して、{embedding_model} で作り直してください。')
+        documents.append({
+            'id': row[0],
+            'source': row[1],
+            'slide': row[2],
+            'title': row[3],
+            'heading': row[4],
+            'body': row[5],
+            'vector': json.loads(row[6]),  # JSONの文字列を、数値のリストに戻す
+        })
+    return documents
+
+
+# 起動時にDBから資料とベクトルを読み込む。資料を直したら、init_db.py を実行してからサーバーを再起動する。
+documents = load_documents(DATABASE, EMBEDDING_MODEL)
 
 app = FastAPI(title='ベクトル検索アプリ')
 

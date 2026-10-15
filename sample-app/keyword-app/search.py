@@ -46,23 +46,26 @@ def extract_words(text):
 def search_documents(keywords, documents, top_k):
     """検索語を多く含む資料を、多い順に top_k 件まで返す。
 
-    返す資料には、一致した検索語の数を 'score' として追加する。
+    資料の単語（document['words']）は、init_db.py が同じ extract_words() で作ってDBに保存したもの。
+    返す資料には、一致した検索語の数を 'score' として追加する（単語のリストは返さない）。
     """
     results = []
     for document in documents:
-        # 資料の文章も、質問と同じ方法で単語に分けてから比べる。
-        document_words = extract_words(
-            document['title'] + '\n' + document['heading'] + '\n' + document['body'])
-
         score = 0
         for keyword in keywords:
-            if keyword in document_words:
+            if keyword in document['words']:
                 score += 1
 
         if score > 0:
-            result = dict(document)  # 元の資料を書き換えないように、コピーしてから追加する
-            result['score'] = score
-            results.append(result)
+            results.append({
+                'id': document['id'],
+                'source': document['source'],
+                'slide': document['slide'],
+                'title': document['title'],
+                'heading': document['heading'],
+                'body': document['body'],
+                'score': score,
+            })
 
     # スコアの大きい順に並べる。同じスコアなら資料IDの小さい順のまま。
     results.sort(key=get_score, reverse=True)
