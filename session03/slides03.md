@@ -23,31 +23,50 @@ footer: LLMアプリケーション開発 2026
 
 ## 今日のゴールと流れ
 
-質問がどこで処理されるかを追いかける。
+質問がブラウザからLLMまで、どのファイルを通るかを追いかけられる。
+サーバーが入力を確かめる理由と、止まる場所の違いを説明できる。
 
 | 内容 |
 |---|
-| 前回のAPI呼び出しの復習 |
-| 画面とFastAPIの役割 |
-| POST・JSON・入力検証 |
-| fetchの実装と動作確認 |
-| エラー確認・提出 |
+| 通信の2段階、質問が通るファイル |
+| 履歴の置き場所、JSON、Pydantic |
+| 完成版 `chat-app/` を動かす・読む |
+| 穴埋め：app.js の送信、main.py の確認 |
+| `/docs` で 422 と 400 を確認、提出 |
 
-API利用時は毎回、起動するターミナルで非表示入力：
-`read -rsp "APIキー: " OPENAI_API_KEY; echo`
-`export OPENAI_API_KEY`
+API利用時は毎回、起動するターミナルで：
+`export OPENAI_API_KEY=sk-********`
 終了時は停止して `unset OPENAI_API_KEY`。
+
+---
+
+## 今日の進め方
+
+| 段階 | すること |
+|---|---|
+| 1 | `sample-app/chat-app/` の完成版を動かす |
+| 2 | コードの説明を聞く |
+| 3 | `session03/exercise/` の穴あきコードを埋めて動かす |
+| 4 | コミットしてプッシュする |
+| 5 | GitHubのURLをフォームで提出する |
+
+穴あきコードの答えは `sample-app/chat-app/` です。
 
 ---
 
 ## 通信の2段階
 
-1. ブラウザが自分のFastAPIに質問を送る
-2. FastAPIが外部のLLM APIに質問を送る
+1. ブラウザが自分のFastAPIに履歴を送る
+2. FastAPIが外部のLLM APIに履歴を送る
 3. LLMの結果をFastAPIが受け取る
 4. FastAPIがJSONを返し、ブラウザが表示する
 
-ブラウザへ送るのは回答です。APIキーを送る必要はありません。
+| 通信 | 送る側 | 受け取る側 | APIキー |
+|---|---|---|---|
+| 1 | ブラウザ | 自分のFastAPI | 使わない |
+| 2 | 自分のPython | 外部のLLMサービス | 使う |
+
+ブラウザへ送るのは回答です。APIキーはサーバー側だけにあります。
 
 ---
 
@@ -55,186 +74,294 @@ API利用時は毎回、起動するターミナルで非表示入力：
 
 | 順番 | 実行場所 | ファイルと仕事 |
 |---|---|---|
-| 1 | ブラウザ | app.js が質問をJSONにする |
-| 2 | サーバー | main.py がJSONを受け取り検証する |
-| 3 | サーバー | llm.py がLLM APIを呼ぶ |
-| 4 | サーバー | main.py が結果の辞書を返す |
-| 5 | ブラウザ | app.js が回答を表示する |
+| 1 | ブラウザ | `app.js` が履歴をJSONにして送る |
+| 2 | サーバー | `main.py` の `chat()` が履歴を確かめる |
+| 3 | サーバー | `llm.py` の `ask_with_history()` がLLM APIを呼ぶ |
+| 4 | サーバー | `main.py` が結果の辞書を返す |
+| 5 | ブラウザ | `app.js` が回答を履歴に足して表示する |
 
-APIキーを使うのは、サーバー側のLLM呼び出しです。
+`ask_with_history(history, model, instructions)` は前回の `chat.py` と同じ考え方です。
 
 ---
 
-## 既存コードと今回の追加
+## 今回のファイル
 
-| 前回から使う | 今回加える |
+| ファイル | 役割 |
 |---|---|
-| `settings.py` | `main.py`：自作API |
-| `llm.py` の `ask_plain()` | `static/index.html`：入力画面 |
-| LLM APIの呼び出し | `static/app.js`：送信と表示 |
-| 入出力の辞書 | `static/style.css`：見た目 |
+| `main.py` | 自作API `/api/chat` と、画面の配信 |
+| `llm.py` | OpenAIのAPIを呼ぶ `ask_with_history()` |
+| `static/index.html` | 入力欄、ボタン、会話の一覧 |
+| `static/app.js` | 履歴をためる、送信する、表示する |
+| `static/style.css` | 見た目 |
 
-`session03` のコードには、検索やDBの機能はまだありません。
+読み順は `static/app.js`、`main.py` の `chat()`、`llm.py` です。
+前回の `llm-call/chat.py` の `input()` が、Web画面に置き換わります。
 
 ---
 
-## 質問のJSON
+## 履歴はどこにあるか
 
-ブラウザからFastAPIへ送る例です。
+履歴はブラウザの `history` 変数だけが持ちます。サーバーは保存しません。
 
-```json
-{
-  "question": "FastAPIとは？",
-  "mode": "plain",
-  "search_text": "",
-  "top_k": 3
-}
+```javascript
+// 会話の履歴。質問と回答を、この順番でためていく。
+let history = [];
 ```
 
-`search_text` と `top_k` は、後の検索用です。今回は使いません。
+| 性質 | 理由 |
+|---|---|
+| 何人で使っても会話が混ざらない | 履歴は各ブラウザの中にある |
+| 再読み込みで履歴が消える | 変数が作り直される |
+| サーバーは送られた履歴を確かめる | 書き換えられている可能性がある |
 
 ---
 
-## 同じ質問の3つの形
+## 完成版を動かす
+
+```bash
+source .venv/bin/activate
+cd sample-app/chat-app
+python main.py
+```
+
+ブラウザでポート8000番を開きます。
+`main.py` は、画面のファイルとAPIの両方を配信します。
+
+| 試すこと | 期待する結果 |
+|---|---|
+| 「私の名前は佐藤です。」の次に「私の名前は？」 | 答えられる |
+| 「会話をリセット」の後に「私の名前は？」 | 答えられない |
+| 質問を重ねる | 入力トークン数が増える |
+
+---
+
+## 送るJSONの形
+
+ブラウザからFastAPIへ送る本文です。これまでの会話を全部入れます。
+
+```json
+{"history": [
+  {"role": "user", "content": "私の名前は佐藤です。"},
+  {"role": "assistant", "content": "こんにちは、佐藤さん。"},
+  {"role": "user", "content": "私の名前は？"}
+]}
+```
+
+`role` は `user`（質問）か `assistant`（LLMの回答）です。
+最後の1件が、今回の質問です。
+
+---
+
+## 同じ履歴の3つの形
 
 | 場所 | 表現 |
 |---|---|
-| JavaScriptのオブジェクト | `{question: 'FastAPIとは？'}` |
-| HTTPで送るJSON文字列 | `{"question":"FastAPIとは？"}` |
-| Pythonの受信後 | `request.question` が文字列を持つ |
+| JavaScriptの配列 | `[{role: 'user', content: '…'}]` |
+| HTTPで送るJSON文字列 | `{"history":[{"role":"user","content":"…"}]}` |
+| Pythonの受信後 | `request.history` が `Message` のリスト |
 
 `JSON.stringify()` は送信用の文字列へ変換します。
-サーバーはJSONを読み取り、入力モデルで検証します。
-質問そのものの意味は、変換の前後で変えません。
+FastAPIはJSONを読み取り、Pydanticのモデルで検証します。
+履歴の中身は、変換の前後で変わりません。
 
 ---
 
 ## Pydanticによる入力の形
 
 ```python
-class Question(BaseModel):
-    question: str = Field(min_length=1, max_length=500)
-    mode: Literal['plain'] = 'plain'
+class Message(BaseModel):
+    role: Literal['user', 'assistant']
+    content: str = Field(min_length=1, max_length=3000)
+
+
+class ChatRequest(BaseModel):
+    history: list[Message] = Field(min_length=1)
 ```
 
-型と長さをサーバーで検証します。
+型・値・長さをサーバーで検証します。
+`role` が `system` のデータや、空の `content` は、ここで止まります。
 ブラウザの `maxlength` だけでは、別のプログラムからの入力を防げません。
-空白だけの文字列は `strip()` の後にも確認します。
 
 ---
 
-## 入力検証を通る例・止まる例
+## chat() の3つの確認
 
-| question | 文字数の条件 | strip後の確認 |
-|---|---|---|
-| "FastAPIとは？" | 通る | 通る |
-| "" | 止まる | 到達しない |
-| "   " | 通る | 空文字になるので止まる |
-| 501文字の文 | 止まる | 到達しない |
-
-文字数と、空白だけかどうかは別の確認です。
-入力検証で止まれば、LLM APIは呼び出しません。
-
----
-
-## エンドポイント
+Pydanticを通った履歴を、さらに `chat()` で確かめます。
 
 ```python
-@app.post('/api/ask')
-def ask(request: Question):
-    question = request.question.strip()
-    result = ask_plain(question)
-    return result
+question = history[-1]
+if question['role'] != 'user':
+    raise HTTPException(status_code=400, detail='最後は質問（user）にしてください。')
+if len(question['content']) > 500:
+    raise HTTPException(status_code=400, detail='質問は500文字以内で入力してください。')
+if len(history) > MAX_TURNS * 2 - 1:
+    raise HTTPException(status_code=400, detail=f'質問は{MAX_TURNS}回までです。会話をリセットしてください。')
 ```
 
-これは中心部分の抜粋です。実際のコードには入力検証、
-エラー処理、表示用の情報の追加があります。
+`history[-1]` はリストの最後の要素です。
+形は正しくても、意味として受け付けない履歴を止めます。
+
+---
+
+## 422と400の違い
+
+| 止まる場所 | ステータス | 例 |
+|---|---|---|
+| Pydantic（`Message`、`ChatRequest`） | 422 | `history` が空 |
+| Pydantic | 422 | `role` が `system` |
+| Pydantic | 422 | `content` が空 |
+| `chat()` の確認 | 400 | 最後が `assistant` |
+| `chat()` の確認 | 400 | 質問が501文字 |
+| `chat()` の確認 | 400 | 質問が11回目（履歴21件） |
+
+422はFastAPIが自動で返します。400は自分で `raise` します。
+どちらでも、LLM APIは呼び出しません。
+
+---
+
+## MAX_TURNS は2か所にある
+
+| ファイル | 書き方 | 役割 |
+|---|---|---|
+| `main.py` | `MAX_TURNS = 10` | サーバーで確かめる |
+| `app.js` | `const MAX_TURNS = 10;` | 送る前に画面で止める |
+
+```javascript
+if (history.length / 2 >= MAX_TURNS) {
+  statusText.textContent = '質問は' + MAX_TURNS + '回までです。会話をリセットしてください。';
+  return;
+}
+```
+
+画面の確認は使いやすさのため、サーバーの確認は守りのためです。
+2か所を同じ値にします。
 
 ---
 
 ## FastAPIからLLMを呼ぶ
 
 ```python
-result = ask_plain(question)
+try:
+    result = ask_with_history(history, MODEL, INSTRUCTIONS)
+except ValueError as error:
+    raise HTTPException(status_code=400, detail=str(error))
+except APITimeoutError:
+    raise HTTPException(status_code=504, detail='APIの応答が遅れています。時間をおいて試してください。')
+except RateLimitError:
+    raise HTTPException(status_code=429, detail='APIの利用制限です。利用枠を確認してください。')
+except APIError:
+    raise HTTPException(status_code=502, detail='API呼び出しに失敗しました。キー・モデル・利用枠を確認してください。')
+return result
 ```
 
-第2回と同じ関数です。入力方法が `input()` から
-HTTPリクエストに変わっても、LLMとの通信は再利用できます。
-
-通常の `def` のエンドポイントから、同期SDKを呼びます。
-今回は独自の非同期処理やストリーミングは追加しません。
+前回の `except` が、`print` から `HTTPException` に変わりました。
 
 ---
 
-## 回答のJSONに含める情報
+## エラー時のHTTPステータス
 
-| キー | 用途 |
-|---|---|
-| answer | 回答欄に表示する文字列 |
-| sources / context | 第3回は空。後の回で資料を入れる |
-| seconds | サーバーで計測した処理時間 |
-| input_tokens / output_tokens | APIが返した利用量 |
+| 例外 | ステータス | 画面に出る文 |
+|---|---|---|
+| `ValueError` | 400 | 回答が完了しませんでした。… |
+| `APITimeoutError` | 504 | APIの応答が遅れています。… |
+| `RateLimitError` | 429 | APIの利用制限です。… |
+| `APIError` | 502 | API呼び出しに失敗しました。… |
 
-回答の文字列以外も返すことで、画面で状況を確認できます。
+`detail` の文が、そのまま画面のステータス欄に表示されます。
+APIのエラー全文には内部の情報が含まれることがあるので、決まった文だけを返します。
 
 ---
 
 ## 静的ファイルの配信
 
 ```python
-app.mount(
-    '/',
-    StaticFiles(directory=BASE_DIR / 'static', html=True),
-    name='static',
-)
+app.mount('/', StaticFiles(directory=BASE_DIR / 'static', html=True), name='static')
 ```
 
-API定義より後に書きます。公開対象は `static/` だけです。
-アプリのディレクトリ全体を公開すると、設定やDBが漏れる危険があります。
-
----
-
-## 実習1：サーバー起動
-
-リポジトリのルートから実行します。
-
-```bash
-source .venv/bin/activate
-cd session03/exercise
-python main.py
-```
-
-8000番のポートを開きます。
-画面は表示されますが、送信部分が穴埋めなのでまだ質問できません。
-
----
-
-## 画面表示と質問送信の違い
-
-| 観察 | そこまでで分かること |
+| 項目 | 意味 |
 |---|---|
-| 入力画面が開く | HTML・CSSなどを取得できた |
-| モード表示が出る | /api/config の取得に成功した |
-| TODOのメッセージが出る | 送信処理の未実装箇所へ到達した |
-| 回答が表示される | 質問送信から表示まで通った |
+| `'/'` | ルートのURLで画面を配信する |
+| `BASE_DIR / 'static'` | 公開するのは `static/` だけ |
+| `html=True` | `/` で `index.html` を返す |
 
-画面が開くだけでは、質問のPOST通信は確認できません。
+APIの定義より後に書きます。前に書くと `/api/chat` も静的ファイル扱いになります。
+アプリのフォルダ全体を公開すると、`main.py` や `llm.py` が見えてしまいます。
+
+---
+
+## 履歴を画面に描く
+
+```javascript
+function showMessages() {
+  messagesList.replaceChildren(); // 前の表示を消す
+  for (const message of history) {
+    const item = document.createElement('li');
+    if (message.role === 'user') {
+      item.className = 'user';
+      item.textContent = 'あなた: ' + message.content;
+    } else {
+      item.className = 'assistant';
+      item.textContent = 'LLM: ' + message.content;
+    }
+    messagesList.appendChild(item);
+  }
+}
+```
+
+---
+
+## 安全な表示
+
+`showMessages()` は、`history` の内容を毎回まるごと描き直します。
+差分を考えないので、履歴と画面がずれません。
+
+| 書き方 | 扱い |
+|---|---|
+| `textContent` | 文字列として表示する |
+| `innerHTML` | HTMLとして解釈する |
+
+LLMの出力も、ユーザー入力と同じように扱います。
+`innerHTML` へ入れると、出力に含まれるタグやスクリプトが動きます。
+教材ではMarkdownの装飾を付けず、文字列として表示します。
+
+---
+
+## sendQuestion() の流れ
+
+```javascript
+// 1. 今回の質問を履歴に追加して表示する。
+history.push({role: 'user', content: question});
+showMessages();
+questionInput.value = '';
+// 回答を待つ間は、送信もリセットもできないようにする。
+sendButton.disabled = true;
+resetButton.disabled = true;
+statusText.textContent = '回答を待っています…';
+```
+
+| 番号 | すること |
+|---|---|
+| 1 | 質問を `history` に足す |
+| 2 | `history` をまとめてサーバーへ送る（穴あき） |
+| 3 | 回答を `history` に足す |
 
 ---
 
 ## fetchによる送信
 
 ```javascript
-const response = await fetch('/api/ask', {
+// 2. 履歴をまとめてサーバーに送る。
+const response = await fetch('/api/chat', {
   method: 'POST',
   headers: {'Content-Type': 'application/json'},
-  body: JSON.stringify({question: question, mode: 'plain'})
+  body: JSON.stringify({history: history})
 });
 const data = await response.json();
 ```
 
-相対パスなので同じサーバーへ送ります。
-JavaScriptのオブジェクトを `JSON.stringify()` でJSON文字列にします。
+相対パスなので、画面を配信した同じサーバーへ送ります。
+`JSON.stringify()` で、配列をJSON文字列にします。
+`body` に入るのは今回の質問だけでなく、`history` の全部です。
 
 ---
 
@@ -242,174 +369,196 @@ JavaScriptのオブジェクトを `JSON.stringify()` でJSON文字列にしま�
 
 `fetch()` の通信結果は、すぐには返りません。
 
-- `async function`：待ち時間のある処理を書く関数
-- `await`：その処理の結果を待って次へ進む
-- その間もブラウザ全体が固まるわけではない
-
-`response.json()` も、本文の読み取りを待ちます。
-
----
-
-## 待機する処理の順番
+| 書き方 | 意味 |
+|---|---|
+| `async function` | 待ち時間のある処理を書く関数 |
+| `await` | その処理の結果を待って次へ進む |
 
 1. `await fetch(...)` でレスポンスを待つ
 2. `await response.json()` で本文を読み取り、JSONを解析する
 3. `response.ok` を確認する
-4. 成功なら回答を表示し、失敗ならエラー表示へ進む
 
-HTTPエラーの本文も、教材のAPIはJSONで返します。
-本文の読み取りや通信自体が失敗した場合も `catch` へ進みます。
-
----
-
-## 実習2：POSTの穴埋め
-
-1. `static/app.js` の `TODO` を探す
-2. POST通信のコメントを外す
-3. 仮の `throw new Error(...)` を削除する
-4. ページを再読み込みして送信する
-5. APIで生成した回答が表示されることを確認する
-
-質問や参照資料は外部APIへ送信されます。
-
----
-
-## Networkタブで観察
-
-開発者ツールのNetworkタブで `/api/ask` を選びます。
-
-- Request Payload：送った質問と方式
-- Status：200、422、502など
-- Response：返ってきたJSON
-- 時間：応答までの待ち時間
-
-外部LLMへの通信はサーバー側なので、ここには直接表示されません。
-
----
-
-## Networkタブで記録する1件
-
-質問送信後に、一覧から `/api/ask` を選びます。
-
-| 欄 | 確認する値 |
-|---|---|
-| Method | POST |
-| Request Payload | 入力したquestion、modeはplainか |
-| Status | 正常なら200、不正な入力なら422など |
-| Response | answer、利用量など |
-
-一覧が空なら、送信前からタブを開いて再度試します。
-外部LLMへの通信は、ここに表示される1件とは別です。
-
----
-
-## 待っている間の画面
-
-```javascript
-button.disabled = true;
-statusText.textContent = '調べています…';
-```
-
-処理の最後には `finally` でボタンを元に戻します。
-成功時も失敗時も、次の操作ができる必要があります。
-
-送信前に古い回答と資料を消し、新しい質問の結果と混同しないようにします。
-
----
-
-## 成功と失敗の後の画面
-
-| 状態 | 回答欄 | ボタン |
-|---|---|---|
-| 送信直後 | 古い回答を消す | 無効 |
-| 成功後 | 新しい回答を表示 | 有効に戻す |
-| 失敗後 | 古い回答を再表示しない | 有効に戻す |
-
-`finally` は成功・失敗の両方で実行されます。
-失敗後に入力を直して再送できるかも確認します。
+待っている間も、ブラウザ全体が固まるわけではありません。
 
 ---
 
 ## HTTPエラーの扱い
 
-`fetch()` は、HTTP 400や500でも必ず例外になるわけではありません。
+`fetch()` は、HTTP 400や500でも例外になりません。
 
 ```javascript
 if (!response.ok) {
-  throw new Error('入力内容やAPI設定を確認してください。');
+  // サーバーが返したエラーの説明を表示する。
+  let message = '入力内容を確認してください。';
+  if (typeof data.detail === 'string') {
+    message = data.detail;
+  }
+  throw new Error(message);
 }
 ```
 
+`HTTPException` の `detail` が `data.detail` として届きます。
 通信自体の失敗と、サーバーが返したエラーを区別します。
 
 ---
 
-## エラーが起きた場所
-
-| 観察 | 最初に確認する場所 |
-|---|---|
-| /api/ask が送られていない | app.js、Console、穴埋めの状態 |
-| /api/ask が422を返す | 送信したJSONと入力の条件 |
-| /api/ask が502を返す | サーバー側のAPI設定 |
-| 200だが回答が表示されない | Responseのanswerと表示処理 |
-
-「答えが出ない」を、通信・処理・表示に分けて調べます。
-
----
-
-## 安全な表示
+## 失敗したら履歴を戻す
 
 ```javascript
-document.getElementById('answer').textContent = data.answer;
+} catch (error) {
+  // 送れなかった質問は履歴から外し、入力欄に戻す。
+  history.pop();
+  showMessages();
+  questionInput.value = question;
+  statusText.textContent = error.message;
+} finally {
+  sendButton.disabled = false;
+  resetButton.disabled = false;
+}
 ```
 
-LLMの出力も、ユーザー入力と同じように扱います。
-`innerHTML` へ入れると、HTMLとして解釈してしまいます。
-
-教材ではMarkdownの装飾を付けず、文字列として表示します。
+| 状態 | 履歴 | 入力欄 | ボタン |
+|---|---|---|---|
+| 成功 | 回答を足す | 空のまま | 有効に戻す |
+| 失敗 | 質問を外す | 質問を戻す | 有効に戻す |
 
 ---
 
-## 実習3：異常な入力
+## 実習1：完成版を動かして観察
 
-`/docs` を開き、POST `/api/ask` を試します。
+`sample-app/chat-app/` を動かしたまま、開発者ツールのNetworkタブを開きます。
 
-| 入力 | 期待する結果 |
+1. 「私の名前は佐藤です。」を送る
+2. 一覧から `/api/chat` を選ぶ
+3. 「私の名前は？」を送り、もう一度 `/api/chat` を選ぶ
+
+| 欄 | 確認する値 |
 |---|---|
-| 空文字 | 422 |
-| 空白だけ | 422 |
-| 501文字以上 | 422 |
-| `mode: "unknown"` | 422 |
-
-ブラウザの制約を通さなくても、サーバー側が止めます。
+| Method | POST |
+| Request Payload | `history` に会話が全部入っている |
+| Status | 200 |
+| Response | `answer`、`input_tokens`、`output_tokens` |
 
 ---
 
-## 実習の完了確認
+## Payload が長くなる
 
-- 質問を送信し、APIで生成した回答が表示される
-- Networkタブで、送った質問と200の応答を確認する
-- `/docs` から不正な入力を送り、422を確認する
-- 画面に戻り、正常な質問を再送できる
+| 送信 | Payload の `history` | 入力トークン数 |
+|---|---|---|
+| 1回目 | 1件 | 少ない |
+| 2回目 | 3件 | 増える |
+| 3回目 | 5件 | さらに増える |
 
-API環境を使えない場合は、講師の実演を観察して未検証と記録します。
+2回目の Payload には、1回目の質問と回答も入っています。
+外部LLMへの通信はサーバー側なので、Networkタブには表示されません。
+一覧が空なら、送信前からタブを開いて再度試します。
+
+---
+
+## 実習2：app.js の送信を埋める
+
+完成版のサーバーを `Ctrl+C` で止め、穴あき版を起動します。
+
+```bash
+cd ../../session03/exercise
+python main.py
+```
+
+| 手順 | すること |
+|---|---|
+| 1 | 埋める前に送信する。ステータス欄にTODOの文が出て、質問が入力欄に戻る |
+| 2 | `static/app.js` の `sendQuestion()` で `TODO` を探す |
+| 3 | `fetch(...)` と `response.json()` のコメントを外す |
+| 4 | `throw new Error('TODO: …')` の行を消す |
+| 5 | ページを再読み込みして送信する |
+
+---
+
+## 実習2の確認：501を観察
+
+埋めた後に送信すると、サーバーにはまだ穴があるので 501 が返ります。
+
+| 観察 | 分かること |
+|---|---|
+| Networkタブに `/api/chat` が出る | 送信は届いた |
+| Status が 501 | `main.py` の仮の `HTTPException` |
+| ステータス欄に `TODO: main.py の chat() で…` | `detail` が `data.detail` として画面に届いた |
+| 質問が入力欄に戻る | `catch` の `history.pop()` が動いた |
+
+サーバーが返した `detail` が、画面に届く経路を確認できます。
+
+---
+
+## 実習3：main.py の確認を埋める
+
+| 手順 | すること |
+|---|---|
+| 1 | `main.py` の `chat()` で `TODO` を探す |
+| 2 | 3つの `if` と `raise HTTPException(status_code=400, …)` のコメントを外す |
+| 3 | `raise HTTPException(status_code=501, …)` の行を消す |
+| 4 | サーバーを `Ctrl+C` で止めて `python main.py` で起動し直す |
+| 5 | 「私の名前は佐藤です。」の次に「私の名前は？」と送る |
+
+`main.py` を直した後は、サーバーの再起動が必要です。
+`app.js` を直した後は、ページの再読み込みだけで反映されます。
+
+---
+
+## 実習4：/docs から異常な入力
+
+ポート8000番の `/docs` を開き、POST `/api/chat` の「Try it out」を使います。
+
+| 送る `history` | 期待する結果 |
+|---|---|
+| `[]` | 422 |
+| `role` が `system` の1件 | 422 |
+| `content` が `""` の1件 | 422 |
+| 最後が `assistant` | 400 |
+| 501文字の `user` | 400 |
+| `user` と `assistant` を交互に21件 | 400 |
+
+正しい履歴を送ると、実際にLLM APIを呼びます。
+
+---
+
+## 失敗した場所の切り分け
+
+| 観察した状態 | まず確認すること |
+|---|---|
+| 画面が開かない | サーバー起動、ポート8000番、`app.mount` の位置 |
+| TODOの文が出て `/api/chat` が無い | `app.js` の穴埋めと再読み込み |
+| 501 | `main.py` の仮の `raise` |
+| 422 | 送ったJSONの形、`role` と `content` |
+| 400 | `chat()` の3つの確認、質問の回数 |
+| 502・504・429 | キー・モデル・利用枠、ネットワーク |
+
+相談時は、Status と ステータス欄の文を伝えます。キーは共有しません。
 
 ---
 
 ## 確認問題
 
-1. `fetch('/api/ask')` は誰に送信している？
-2. APIキーが必要なのは、どちらの通信？
-3. `finally` がないと、失敗後の画面で何が起こり得る？
-4. LLMが返したHTMLをそのまま実行してよい？
+1. `fetch('/api/chat')` は誰に送信している？
+2. APIキーが必要なのは、2つの通信のどちら？
+3. 画面の `MAX_TURNS` で止めているのに、サーバーでも回数を確かめるのはなぜ？
+4. 422と400は、それぞれどこで止まった印？
+
+<!-- 解答例: 1. 画面を配信している自分のFastAPI。2. FastAPIから外部のLLM APIへの通信。3. 送られてくる履歴は書き換えられる可能性があり、画面の確認は防げないから。4. 422はPydanticのモデル（形）、400は chat() の確認（意味）。 -->
 
 ---
 
 ## 提出物と次回
 
-提出：`static/app.js` と `worksheet.md` のGitHub URL。
+`session03/exercise/` の `static/app.js` と `main.py` をコミットし、プッシュします。
 
-ワークシートには、質問から回答表示までの処理を4段階で書きます。
-HTTP 422を1例確認して記録します。
+```bash
+cd ../..   # リポジトリのルートへ戻る
+git add session03/exercise
+git commit -m "第3回: チャットアプリの送信と検証"
+git push
+```
+
+GitHubで `session03/exercise` を開き、そのURLをフォームから提出します。
+APIキーや、APIの生の例外全文は提出しません。
 
 次回は、LLMへ授業資料を渡し、回答の根拠を確認します。

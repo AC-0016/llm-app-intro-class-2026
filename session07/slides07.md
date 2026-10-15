@@ -23,137 +23,241 @@ Function Callingで、決められた関数を呼ぶ
 
 ## 今日のゴールと流れ
 
-LLMの提案と、Pythonによる実行を区別する。
+LLMが「関数を選ぶ」ことと、Pythonが「関数を実行する」ことを区別して説明できる。
+LLMが作った関数名と引数を、実行前に確かめる理由を説明できる。
 
 | 内容 |
 |---|
-| 文書検索とDB取得の違い |
-| 関数定義と引数の形式 |
-| 呼び出し結果の受け渡し |
-| SQL実装と検証 |
-| 制限・振り返り |
+| Function Callingの流れ、進捗DBと3つの関数 |
+| 完成版 `progress-app/` を動かす・読む |
+| 穴埋め：SQLの選び方、関数の選び方 |
+| 自然文で質問し、関数・引数・DBの結果と回答を照合 |
+| できないことの確認、提出 |
 
-API利用時は毎回、起動するターミナルで非表示入力：
-`read -rsp "APIキー: " OPENAI_API_KEY; echo`
-`export OPENAI_API_KEY`
+API利用時は毎回、起動するターミナルで：
+`export OPENAI_API_KEY=sk-********`
 終了時は停止して `unset OPENAI_API_KEY`。
 
 ---
 
-## 文書検索と構造化データ
+## 今日の進め方
 
-| 質問 | 参照先 |
+| 段階 | すること |
 |---|---|
-| SQLiteとは何か | 学習ノート |
-| 課題を提出する方法 | 案内文書 |
-| 未提出の課題は何件か | 課題DBのstatus |
+| 1 | `sample-app/progress-app/` の完成版を動かす |
+| 2 | コードの説明を聞く |
+| 3 | `session07/exercise/` の穴あきコードを埋めて動かす |
+| 4 | コミットしてプッシュする |
+| 5 | GitHubのURLをフォームで提出する |
 
-更新される状態は、DBの条件検索で取得すると扱いやすくなります。
-この教材の課題DBは架空データで、実在の学生の情報ではありません。
+穴あきコードの答えは `sample-app/progress-app/` です。
+
+---
+
+## 文書検索と、更新されるデータ
+
+| 質問 | 参照先 | 第何回 |
+|---|---|---|
+| ハルシネーションとは？ | 資料（スライド） | 第5・6回の検索 |
+| まだ終わっていない作業は？ | 進捗DBの `done` 列 | 今回 |
+| 4番を完了にして | 進捗DBを書き換える | 今回 |
+
+資料は書かれた内容を探すものでした。
+進捗のように更新される状態は、DBを条件で読み、必要なら書き換えます。
+今回の進捗データは、Webアプリ制作の架空の「やること」です。
 
 ---
 
 ## Function Callingとは
 
-1. アプリが使える関数の名前と引数をLLMに伝える
-2. LLMが関数名と引数を提案する
-3. Pythonが提案を検証して関数を実行する
-4. 実行結果をLLMへ返す
-5. LLMが結果を使って文章を作る
+1. アプリが「使える関数」の名前・説明・引数の形をLLMに渡す
+2. LLMが、呼びたい関数名と引数を返す
+3. Pythonが関数名と引数を確かめてから、関数を実行する
+4. 実行結果をLLMへ送る
+5. LLMが結果をもとに回答の文章を作る
 
 LLMが直接SQLiteを操作するわけではありません。
+LLMが作るのは「関数名と引数」だけで、実行するのはPythonです。
 <!-- 出典: https://developers.openai.com/api/docs/guides/function-calling -->
 
 ---
 
 ## 1問を追うための役割分担
 
-質問：「未提出の課題を教えて」
+質問：「まだ終わっていない作業は？」
 
 | 担当 | この例で行うこと |
 |---|---|
-| LLM・1回目 | get_assignments と pending を提案 |
-| Python | 関数名と引数を確認してSQLを実行 |
-| SQLite | 条件に一致する課題を返す |
-| LLM・2回目 | 取得した課題を使って回答文を生成 |
+| LLM・1回目 | `get_tasks` を `status` = `todo` で呼ぶと返す |
+| Python | 関数名と引数を確かめ、決まったSQLを実行 |
+| SQLite | `done = 0` の行を返す |
+| LLM・2回目 | 返った行をもとに回答文を生成 |
 
 以下は処理を追う説明例です。モデルの実際の出力は実行して確認します。
 
 ---
 
-## 今回使える関数
+## 進捗DBの tasks テーブル
 
-```python
-get_assignments(status)
-```
+`progress-app/progress.db` の `tasks` テーブルです。起動時に `FIRST_TASKS` の6件を入れます。
 
-| status | 取得するもの |
-|---|---|
-| all | すべての課題 |
-| pending | 未提出の課題 |
-| done | 提出済みの課題 |
+| id | task | done |
+|---|---|---|
+| 1 | 画面のHTMLとCSSを作る | 1 |
+| 2 | FastAPIで質問を受け取るAPIを作る | 1 |
+| 3 | SQLiteに資料を保存する | 1 |
+| 4 | Janomeでキーワード検索を作る | 0 |
+| 5 | 回答に資料IDを付ける | 0 |
+| 6 | GitHubにコミットしてURLを提出する | 0 |
 
-読み取りだけです。削除や提出済みへの変更は許可しません。
+SQLiteに真偽値の型は無いので、`done` は1（完了）/0（未完了）で保存します。
+APIでは `true` / `false` に直して返します。
 
 ---
 
-## 初期状態の課題DB
+## INSERT OR IGNORE と初期値に戻す方法
 
-| id | title | status |
-|---|---|---|
-| 1 | 第2回 API呼び出しレポート | done |
-| 2 | 第5回 検索結果の比較 | pending |
-| 3 | 第8回 評価シート | pending |
+```python
+cursor.executemany('INSERT OR IGNORE INTO tasks (id, task, done) VALUES (?, ?, ?)', FIRST_TASKS)
+```
 
-教材の架空データです。未提出は2件、提出済みは1件です。
-既存の課題の状態は、初期化や再起動で上書きしません。
+`INSERT OR IGNORE` は、同じidの行がすでにあれば何もしません。
+再起動しても、追加した行や変更した完了フラグは上書きされません。
+
+| したいこと | 操作 |
+|---|---|
+| 変更を残したまま再起動 | そのまま `python main.py` |
+| 最初の6件に戻す | サーバーを止め、`progress.db` を削除してから起動 |
+
+---
+
+## LLMが呼べる3つの関数
+
+| 関数 | 引数 | DB | すること |
+|---|---|---|---|
+| `get_tasks` | `status`（`all`・`todo`・`done`） | 読む | 進捗を調べる |
+| `add_task` | `task`（100文字以内） | 書く | やることを未完了で追加する |
+| `set_task_done` | `task_id`（整数）、`done`（`true`・`false`） | 書く | 完了フラグを指定した値にする |
+
+削除する関数は用意していません。
+1つの質問で呼べる関数は1回だけです。
+
+---
+
+## 「反対にする」ではなく「指定した値にする」
+
+`set_task_done` は、完了フラグを `done` の値にします。
+
+| 設計 | 同じ呼び出しが2回起きると |
+|---|---|
+| 反対にする（切り替え） | 完了にした後、未完了へ戻ってしまう |
+| 指定した値にする（今回） | 完了のまま変わらない |
+
+LLMが同じ関数を2回呼んでも結果が変わらないように、引数で値を指定させます。
+idは利用者が示したものだけを使い、LLMに推測させません。
+
+---
+
+## 完成版を動かす
+
+```bash
+source .venv/bin/activate
+cd sample-app/progress-app
+python main.py
+```
+
+ブラウザでポート8003番を開きます。DBは起動時に `init_db()` が作ります。
+
+「まだ終わっていない作業は？」と質問します。
+回答の下の「LLMが呼んだ関数とDBの結果」に、関数名・引数・行の表が出ます。
+この表は `static/app.js` の `showToolResults()` が作ります。
+関数を呼ばなかったときは「関数は呼ばれませんでした。」と出ます。
+
+---
+
+## 今回のファイル
+
+| ファイル | 役割 |
+|---|---|
+| `main.py` | 質問を受け取り、`ask_with_tools()` を呼ぶ。起動時に `init_db()` |
+| `llm.py` | `TOOLS`・`INSTRUCTIONS`、`run_tool()`、`ask_with_tools()` |
+| `progress_db.py` | `init_db()`、`get_tasks()`、`add_task()`、`set_task_done()` |
+| `static/app.js` | 送信と、`showToolResults()` による表の表示 |
+
+読み順は `main.py` の `ask()`、`llm.py` の `ask_with_tools()`、`run_tool()`、`progress_db.py` です。
+SQLを書くのは `progress_db.py` だけです。
 
 ---
 
 ## 関数の説明を渡す
 
 ```python
-{
-    'type': 'function',
-    'name': 'get_assignments',
-    'description': '教材用の架空の課題の提出状況を調べる。',
-    'parameters': {...},
-    'strict': True,
-}
+TOOLS = [
+    {
+        'type': 'function',
+        'name': 'get_tasks',
+        'description': 'Webアプリ制作の進捗（id・やること・完了フラグ）を調べる。'
+                       'status は all（全件）・todo（未完了）・done（完了）。',
+        'parameters': {...},
+        'strict': True,
+    },
 ```
 
-説明文は、LLMが用途を判断する材料です。
-`parameters` に、受け付ける引数の形を記述します。
+`description` は、LLMが「どの関数をいつ使うか」を判断する材料です。
+`add_task` の説明には「利用者が追加を頼んだときだけ使う」と書いてあります。
 
 ---
 
 ## 引数の形
 
 ```python
-'properties': {
-    'status': {
-        'type': 'string',
-        'enum': ['all', 'pending', 'done']
-    }
+'parameters': {
+    'type': 'object',
+    'properties': {'status': {'type': 'string', 'enum': ['all', 'todo', 'done']}},
+    'required': ['status'],
+    'additionalProperties': False,
 },
-'required': ['status'],
-'additionalProperties': False
+'strict': True,
 ```
 
-選択肢と必須項目を指定します。サーバー側でも再度検証します。
+| 指定 | 意味 |
+|---|---|
+| `enum` | 値はこの選択肢だけ |
+| `required` | 必ず入れる引数 |
+| `additionalProperties: False` | それ以外の引数は入れない |
+| `strict: True` | この形に合う引数だけを生成させる |
 
 ---
 
 ## 自然文と引数の対応
 
-| 利用者の質問 | 期待するstatus |
+| 質問の例 | LLMが呼ぶはずの関数 |
 |---|---|
-| 未提出の課題を教えて | pending |
-| 提出済みの課題は？ | done |
-| すべての課題を一覧にして | all |
+| まだ終わっていない作業は？ | `get_tasks({"status":"todo"})` |
+| 終わった作業は？ | `get_tasks({"status":"done"})` |
+| 「READMEを書く」を追加して | `add_task({"task":"READMEを書く"})` |
+| 4番を完了にして | `set_task_done({"task_id":4,"done":true})` |
+| FastAPIとは？ | 関数を呼ばずに回答する場合がある |
 
-日本語の質問を、関数が受け取れる選択肢へ対応させます。
-期待する引数と、実際にモデルが提案した引数を比較します。
+日本語の質問を、関数が受け取れる引数へ対応させるのはLLMです。
+期待する引数と、実際に返った引数を画面で見比べます。
+
+---
+
+## LLMへの指示
+
+```python
+INSTRUCTIONS = (
+    'Webアプリ制作の進捗は、必ず関数の結果だけを根拠にしてください。'
+    '結果にないことは推測しないでください。'
+    '進捗の追加や変更は、利用者がはっきり頼んだときだけ行ってください。'
+    '複数の関数を呼ぶ必要がある場合は、1つだけ呼んでください。2つ目は呼ばなくてよいです。'
+    '完了フラグを変えるときは、利用者が示したidを使い、idを推測しないでください。'
+    '日本語で簡潔に回答してください。'
+)
+```
+
+指示は「お願い」です。守られる保証はないので、コード側でも制限します。
 
 ---
 
@@ -161,15 +265,19 @@ get_assignments(status)
 
 ```python
 first = client.responses.create(
-    model=MODEL, reasoning={'effort': 'none'},
-    instructions=instructions,
-    input=history, tools=TOOLS,
-    parallel_tool_calls=False,
-    max_output_tokens=600, store=False,
+    model=model,
+    reasoning={'effort': 'none'},
+    instructions=INSTRUCTIONS,
+    input=history,
+    tools=TOOLS,
+    parallel_tool_calls=False,  # 関数は1回に1つだけ呼ばせる
+    max_output_tokens=600,
+    store=False,
 )
 ```
 
-関数の情報を `tools` に入れます。まだ関数は実行していません。
+`tools` に関数の説明を入れます。この時点では、まだ関数を実行していません。
+`history` は `[{'role': 'user', 'content': question}]` から始まります。
 
 ---
 
@@ -178,11 +286,16 @@ first = client.responses.create(
 ```python
 for item in first.output:
     if item.type == 'function_call':
-        rows = execute_tool(item.name, item.arguments)
+        rows = run_tool(item.name, item.arguments, database)
 ```
 
-出力には文章など、関数以外の項目もあります。
-`arguments` はJSON文字列なので、`json.loads()` で辞書へ変換します。
+| 項目 | 内容 |
+|---|---|
+| `item.name` | LLMが選んだ関数名（文字列） |
+| `item.arguments` | 引数のJSON文字列。例 `'{"status": "todo"}'` |
+| `item.call_id` | この依頼を示すID |
+
+出力には文章など、関数以外の項目もあります。`type` で見分けます。
 
 ---
 
@@ -193,102 +306,87 @@ for item in first.output:
 ```json
 {
   "type": "function_call",
-  "name": "get_assignments",
-  "arguments": "{\"status\":\"pending\"}",
+  "name": "get_tasks",
+  "arguments": "{\"status\":\"todo\"}",
   "call_id": "call_example_01"
 }
 ```
 
-この時点ではDBをまだ検索していません。
-`arguments` の中身はJSON文字列なので、Pythonで解析します。
+この時点ではDBをまだ読んでいません。
+`arguments` は文字列なので、Pythonで `json.loads()` して辞書にします。
 
 ---
 
-## 実行前の検証
+## 実行前の検証：run_tool()
 
 ```python
-if name != 'get_assignments':
-    raise ValueError('許可していない関数です。')
 args = json.loads(arguments)
+if not isinstance(args, dict):
+    raise ValueError('引数の形が正しくありません。')
+
+if name == 'get_tasks':
+    check_keys(args, ['status'])
+    return get_tasks(database, args['status'])
+elif name == 'add_task':
+    check_keys(args, ['task'])
+    return add_task(database, args['task'])
+elif name == 'set_task_done':
+    check_keys(args, ['task_id', 'done'])
+    return set_task_done(database, args['task_id'], args['done'])
+else:
+    raise ValueError('許可していない関数です。')
 ```
 
-続けて、辞書か、キーが `status` だけか、値が許可した文字列かを調べます。
-モデルが作った値も、外部からの入力として扱います。
+---
+
+## 引数の名前と値の確認
+
+```python
+def check_keys(args, expected_keys):
+    if sorted(args.keys()) != sorted(expected_keys):
+        raise ValueError('引数の形が正しくありません。')
+```
+
+| 確かめること | 場所 |
+|---|---|
+| 関数名が3つのどれか | `run_tool()` の分岐 |
+| 引数の名前がちょうど同じか | `check_keys()` |
+| 値の型、文字数、idがあるか | `progress_db.py` の各関数 |
+
+関数名を `eval()` や `exec()` に渡しません。許可した3つの名前だけを `if` で選びます。
 
 ---
 
 ## 検証を通る引数・止まる引数
 
-関数名が `get_assignments` の場合です。
-
-| argumentsの内容 | 結果 |
+| 関数名と arguments | 結果 |
 |---|---|
-| {"status":"pending"} | 許可された文字列なので実行 |
-| {"status":"unknown"} | 選択肢にないので拒否 |
-| {"status":1} | 文字列ではないので拒否 |
-| {"status":"all","delete":true} | 余分なキーがあるので拒否 |
+| `get_tasks` `{"status":"todo"}` | 実行される |
+| `delete_all` `{}` | 許可していない関数です。 |
+| `get_tasks` `{"status":"todo","x":1}` | 引数の形が正しくありません。 |
+| `get_tasks` `{"status":"unknown"}` | status は all・todo・done のどれかにしてください。 |
+| `set_task_done` `{"task_id":99,"done":true}` | id 99 のやることはありません。 |
 
-`strict` の指定に加えて、実行するPython側でも検証します。
+`strict: True` で形を指定していても、実行するPython側で必ず確かめます。
+`ValueError` は `main.py` が 400 にして、画面にその文が出ます。
 
 ---
 
-## SQLiteの条件検索
+## SQLは決まった文だけ
 
 ```python
-cursor.execute(
-    'SELECT id, title, status FROM assignments WHERE status = ?',
-    (status,),
-)
+if status == 'all':
+    sql = 'SELECT id, task, done FROM tasks ORDER BY id'
+elif status == 'todo':
+    sql = 'SELECT id, task, done FROM tasks WHERE done = 0 ORDER BY id'
+elif status == 'done':
+    sql = 'SELECT id, task, done FROM tasks WHERE done = 1 ORDER BY id'
+else:
+    raise ValueError('status は all・todo・done のどれかにしてください。')
 ```
 
-SQLの形はPython側が決めます。
-`?` に値を別の引数で渡す書き方は、前のWeb授業と同じです。
-
----
-
-## pendingの検索結果
-
-初期DBで `get_assignments('pending')` を実行した結果です。
-
-```python
-[
-    {'id': 2, 'title': '第5回 検索結果の比較',
-     'status': 'pending'},
-    {'id': 3, 'title': '第8回 評価シート',
-     'status': 'pending'}
-]
-```
-
-返るのは辞書のリストです。この時点で件数と課題名を確認できます。
-LLMを使う前に、関数単体でも同じ結果になるか確かめます。
-
----
-
-## 実習1：SQLの穴埋め
-
-```bash
-cd session07/exercise
-python init_db.py
-```
-
-`assignment_tools.py` の `get_assignments()` を完成させます。
-`all` の場合と、それ以外の場合のSQLを書き分けます。
-仮の `raise` を削除します。
-
----
-
-## 実習2：関数だけを確認
-
-ターミナルで `python` を起動します。
-
-```python
-from assignment_tools import get_assignments
-print(get_assignments('pending'))
-print(get_assignments('done'))
-print(get_assignments('all'))
-```
-
-モデルを使う前に、普通のPython関数として正しく動くか確認します。
+`status` の値でSQLを選ぶだけで、LLMが作った文字列をSQLに入れません。
+書き込みも `INSERT INTO tasks (task, done) VALUES (?, 0)` のように、値は `?` で別に渡します。
 
 ---
 
@@ -298,135 +396,203 @@ print(get_assignments('all'))
 history.extend(first.output)
 history.append({
     'type': 'function_call_output',
-    'call_id': item.call_id,
+    'call_id': item.call_id,  # どの依頼への結果かを示す
     'output': json.dumps(rows, ensure_ascii=False),
 })
 ```
 
-`call_id` で、どの呼び出しへの結果かを対応させます。
-関数を提案した出力も、次の入力に引き継ぎます。
-<!-- 出典: https://developers.openai.com/api/docs/guides/function-calling -->
-
----
-
-## call_idで対応させるもの
-
 | 1回目の出力 | Pythonが追加する結果 |
 |---|---|
-| type: function_call | type: function_call_output |
-| call_id: call_example_01 | call_id: call_example_01 |
-| arguments: pendingの指定 | output: 取得した2件のJSON文字列 |
+| `type: function_call` | `type: function_call_output` |
+| `call_id: call_example_01` | `call_id: call_example_01` |
+| `arguments: todoの指定` | `output: 取得した3件のJSON文字列` |
 
-同じ `call_id` で、どの依頼に対する結果かを示します。
-呼び出しの出力と、その結果の両方を `history` に入れます。
-IDは説明用です。実装はモデルが返した `item.call_id` を使います。
+関数を呼びたいという出力と、その結果の両方を `history` に入れます。
 
 ---
 
 ## 2回目のAPI呼び出し
 
-関数の結果を含む `history` を渡して、回答を生成します。
-教材では2回目に `tools` を渡しません。
+```python
+final = client.responses.create(
+    model=model,
+    reasoning={'effort': 'none'},
+    instructions=INSTRUCTIONS,
+    input=history,
+    max_output_tokens=600,
+    store=False,
+)
+```
 
-- 追加の関数呼び出しを許可しない
-- 無限に処理を繰り返さない
-- 2回分の入力・出力トークンを合計する
+- 2回目は `tools` を渡さないので、これ以上関数は呼ばれない
+- 関数を呼ばなかった質問は、1回目の回答（`first`）をそのまま使う
+- 料金は2回分なので、トークン数も `first.usage` と `final.usage` を足す
 
-関数を呼ばずに回答する場合の分岐も、コードで確認します。
+---
+
+## 実習1：関数の選び方を観察
+
+完成版（ポート8003）で、次の4つを順に質問します。
+
+| 質問 | 観察すること |
+|---|---|
+| まだ終わっていない作業は？ | `get_tasks`、`status` は `todo`、3件 |
+| 「READMEを書く」を追加して | `add_task`、id 7 が未完了で増える |
+| 4番を完了にして | `set_task_done`、`task_id` 4・`done` true |
+| FastAPIとは？ | 「関数は呼ばれませんでした。」と出るか |
+
+質問ごとに、呼ばれた関数名と引数をメモします。
+最後にもう一度「まだ終わっていない作業は？」と聞き、4番が消えて7番が入ることを確かめます。
 
 ---
 
 ## 最終回答とDB結果の照合
 
-説明用の回答例：
+説明用の回答例（「まだ終わっていない作業は？」）：
 
-> 未提出は2件です。「第5回 検索結果の比較」と
-> 「第8回 評価シート」です。
+> 未完了は3件です。4「Janomeでキーワード検索を作る」、
+> 5「回答に資料IDを付ける」、6「GitHubにコミットしてURLを提出する」です。
 
-照合するのは、件数・課題名・提出状況です。
-取得したデータにない締切や成績を、回答に足していないかも確認します。
-
-関数を正しく呼べても、回答の確認は別に必要です。
-
----
-
-## 実習3：自然文から課題を取得
-
-`python main.py` で起動し、「課題DB」を選びます。
-APIモードで、次の質問を試します。
-
-- 「未提出の課題を教えて」
-- 「提出済みの課題は？」
-- 「すべての課題を一覧にして」
-
-学習用の詳細欄で、関数名・引数・DBの結果を確認します。
-デモは固定でpendingを実行するので、関数選択の評価には使えません。
-
----
-
-## 失敗した段階の確認
-
-| 観察した問題 | 確認するもの |
+| 照合する項目 | 見るところ |
 |---|---|
-| pendingのはずがdoneになった | 質問・関数の説明・実際の引数 |
-| pendingで提出済みの行が返る | Python関数とSQLの条件 |
-| DB結果は正しいが回答が違う | 2回目の入力と生成結果 |
-| どの質問でもpendingになる | 関数定義と渡した引数を確認 |
+| 件数 | 表の行数 |
+| id と やること | 表の値と一字ずつ |
+| 書き足し | 表にない期限や担当者を回答に足していないか |
 
-学習用の詳細欄で、引数とDB結果を回答と分けて確認します。
+関数を正しく呼べていても、回答の確認は別に必要です。
 
 ---
 
-## 実習4：許可しない引数
+## 実習2：get_tasks() のSQLを埋める
+
+`session07/exercise/progress_db.py` の `get_tasks()` を完成させます。
+
+1. `TODO` を探す（`status` に応じてSQLを選ぶ場所）
+2. `if` / `elif` / `else` の8行のコメントを外す
+3. `raise ValueError('TODO: …')` の行を消す
+4. `cd session07/exercise` で `python` を起動して確かめる
 
 ```python
-from assignment_tools import execute_tool
-execute_tool('delete_all', '{}')
-execute_tool('get_assignments', '{"status":"unknown"}')
+from progress_db import init_db, get_tasks
+init_db('progress.db')
+get_tasks('progress.db', 'todo')
 ```
 
-どちらも `ValueError` で止まることを確認します。
-「全部削除して」という自然文でも、削除する関数自体がありません。
+埋める前は `ValueError`（TODOの文）で止まります。
+埋めた後は id 4・5・6 の3件の辞書のリストが返ります。`all`・`done` も試します。
+
+---
+
+## 実習3：run_tool() を埋める
+
+`session07/exercise/llm.py` の `run_tool()` を完成させます。
+
+1. `TODO` を探す（関数名ごとの分岐）
+2. `if` / `elif` / `else` のコメントを外す。`check_keys` の行も含めて11行
+3. `raise ValueError('TODO: …')` の行を消す
+4. 同じフォルダの `python` で確かめる（APIキーは不要）
+
+```python
+from llm import run_tool
+run_tool('get_tasks', '{"status": "todo"}', 'progress.db')
+run_tool('delete_all', '{}', 'progress.db')
+run_tool('get_tasks', '{"status": "todo", "x": 1}', 'progress.db')
+```
+
+1つ目は3件、2つ目は「許可していない関数です。」、3つ目は「引数の形が正しくありません。」です。
+
+---
+
+## 実習4：自然文で質問して照合
+
+完成版のサーバーを止めてから、exercise 側を起動します。
+
+```bash
+cd session07/exercise
+python main.py
+```
+
+ポート8003番を開き、実習1と同じ4つの質問を送ります。
+
+| 見比べるもの | 期待すること |
+|---|---|
+| 関数名・引数 | 実習1でメモしたものと同じ |
+| DBの結果の表 | 実習2で `python` から見た行と同じ |
+| 回答 | 表の件数・id・やることと一致 |
+
+穴が残っていると、画面に `TODO: …` の文が出ます。
+
+---
+
+## 実習5：できないことを確かめる
+
+| 質問 | 期待すること |
+|---|---|
+| 全部削除して | 削除する関数が無いので、消えない |
+| 3番を未完了に戻して | `set_task_done` で `done` false |
+| 5番と6番を完了にして | 関数は1つだけ。片方しか変わらない |
+
+削除は、LLMが「削除したい」と言っても関数そのものがありません。
+5番と6番は、`parallel_tool_calls=False` と指示により1回しか呼べないことを確かめます。
+残った方は「6番を完了にして」のように、もう1問で頼みます。
 
 ---
 
 ## 権限をコードで制限
 
-- 関数名を固定する
-- 値の選択肢を検証する
-- 読み取りだけのSQLにする
-- `eval()`、`exec()`、モデルが生成したSQLを実行しない
+| 制限 | 場所 |
+|---|---|
+| 関数名を3つに固定 | `run_tool()` の `if` と `else` |
+| 引数の名前をちょうど同じに | `check_keys()` |
+| 型・文字数・idの存在 | `progress_db.py` の各関数 |
+| SQLは決まった文、値は `?` | `progress_db.py` |
+| 削除関数を作らない | `TOOLS` |
+| 2回目に `tools` を渡さない | `ask_with_tools()` |
 
-プロンプトに「安全に」と書くだけでなく、
-アプリが実行できる操作そのものを狭めます。
+`eval()`、`exec()`、LLMが生成したSQLは実行しません。
+指示文に「安全に」と書くだけでなく、アプリが実行できる操作そのものを狭めます。
 
 ---
 
-## 文書検索との組み合わせ
+## 失敗した場所の切り分け
 
-今回は画面で「資料検索」か「課題DB」かを選びます。
-LLMによる自動的な使い分けは、発展課題です。
+| 観察した状態 | まず確認すること |
+|---|---|
+| importで止まる | 仮想環境と依存パッケージ |
+| 画面に `TODO: …` の文が出る | 穴埋めと仮の `raise`、どちらのファイルか |
+| 「許可していない関数です。」 | `run_tool()` の関数名の分岐 |
+| 「引数の形が正しくありません。」 | `check_keys()` に渡す引数名のリスト |
+| todo のはずが done になった | 質問の文、関数の説明、実際の引数 |
+| DBの結果は正しいが回答が違う | 2回目の入力と生成結果 |
+| 「API呼び出しに失敗しました」 | キー・モデル・利用枠 |
 
-制作では、すべての機能を使う必要はありません。
-自分の題材に合う取得方法を選び、その理由を説明します。
+相談時は、質問の文と画面の関数名・引数を伝えます。キーは共有しません。
 
 ---
 
 ## 確認問題
 
 1. 関数を実際に実行するのは、LLMとPythonのどちら？
-2. 引数の形式をtoolsで指定したら、Pythonの検証は不要？
-3. `call_id` は何を対応させる？
-4. APIの利用量は1回目だけを数えればよい？
+2. `strict: True` で引数の形を指定したら、Pythonの検証は不要？
+3. `call_id` は何と何を対応させる？
+4. 完了フラグを「反対にする」ではなく「指定した値にする」関数にしたのはなぜ？
+
+<!-- 解答例: 1. Python。LLMは関数名と引数を返すだけ。2. 必要。LLMの出力は外部からの入力として扱い、run_tool と progress_db.py で確かめる。3. 1回目の function_call と、Pythonが追加する function_call_output。4. 同じ関数が2回呼ばれても元に戻らないようにするため。 -->
 
 ---
 
 ## 提出物と次回
 
-提出：`assignment_tools.py` と `worksheet.md` のGitHub URL。
+`session07/exercise/` の2つのファイル（`progress_db.py`、`llm.py`）をコミットし、プッシュします。
+`progress.db` は `.gitignore` にあるので、コミットされません。
 
-- pending・done・allの取得結果
-- 許可していない関数や引数で止まること
-- 関数選択と実行の役割の説明
+```bash
+cd ../..   # リポジトリのルートへ戻る
+git add session07/exercise
+git commit -m "第7回: Function Calling"
+git push
+```
 
-次回は、完成したアプリを評価し、安全な運用を点検します。
+GitHubで `session07/exercise` を開き、そのURLをフォームから提出します。
+
+次回は、完成したアプリを評価し、安全な運用を点検して、制作の企画に入ります。
