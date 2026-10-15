@@ -131,17 +131,6 @@ def test_search_rebuild_and_tools(load_app):
     assert len(knowledge.all_chunks()) == 7
 
 
-def test_rate_limit(load_app):
-    main, _ = load_app('sample-app')
-    client = TestClient(main.app)
-    for i in range(10):
-        assert client.post('/api/ask',json={'question':'a','mode':'plain'}).status_code == 200
-    assert client.post('/api/ask',json={'question':'a','mode':'plain'}).status_code == 429
-    main.request_times.clear()
-    main.request_count = 100
-    assert client.post('/api/ask',json={'question':'a','mode':'plain'}).status_code == 429
-
-
 @pytest.mark.parametrize('stage,mode',[(5,'keyword'),(6,'vector'),(7,'tools'),(8,'plain')])
 def test_exercises_fail_explicitly_until_completed(load_app, stage, mode):
     main, _ = load_app(f'session{stage:02}/exercise')

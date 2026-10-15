@@ -1,5 +1,4 @@
 """授業資料アシスタント。実行: python main.py"""
-import threading
 import time
 import uvicorn
 from fastapi import FastAPI, HTTPException
@@ -27,32 +26,11 @@ class Question(BaseModel):
     top_k: int = Field(default=3, ge=1, le=5)
 
 
-# BEGIN STAGE 8
-# 1プロセスの教材用の上限。全利用者で共有し、再起動するとリセットされる。
-request_times = []
-request_count = 0
-limit_lock = threading.Lock()
-
-
-def check_limit():
-    global request_count
-    now = time.monotonic()
-    with limit_lock:
-        while request_times and request_times[0] < now - 60:
-            request_times.pop(0)
-        if len(request_times) >= 10 or request_count >= 100:
-            raise HTTPException(status_code=429, detail='教材用の利用上限に達しました。講師に相談してください。')
-        request_times.append(now)
-        request_count += 1
-# END STAGE 8
-
-
 @app.post('/api/ask')
 def ask(request: Question):
     question = request.question.strip()
     if not question:
         raise HTTPException(status_code=422, detail='質問を入力してください。')
-    check_limit()
     started = time.monotonic()
     chunks = []
     keywords = []
