@@ -17,15 +17,12 @@
     <select id="mode">
       <option value="plain">資料なし</option>
       <option value="context">資料全体を渡す</option>
-      <option value="keyword" selected>キーワード検索</option>
-      <option value="vector">意味検索</option>
+      <option value="keyword" selected>キーワード検索（Janome）</option>
       <option value="tools">課題DB（架空データ）</option>
     </select>
     <label for="question">質問</label>
     <textarea id="question" maxlength="500" required rows="3" placeholder="SQLiteにデータを保存するには？"></textarea>
     <div id="search-options">
-      <label for="search-text">検索語（キーワード検索で使用）</label>
-      <input id="search-text" maxlength="100" value="SQLite 保存" placeholder="単語を空白で区切る">
       <label for="top-k">検索結果の上位件数</label>
       <select id="top-k"><option>1</option><option selected>3</option><option>5</option></select>
     </div>

@@ -65,7 +65,7 @@ def test_each_complete_app(load_app, relative, stage):
     modes = ['plain']
     if stage >= 4: modes.append('context')
     if stage >= 5: modes.append('keyword')
-    if stage >= 6:
+    if stage >= 6 and (directory / 'embeddings.py').exists():
         embeddings = importlib.import_module('embeddings')
         assert embeddings.build_embeddings() == 10
         modes.append('vector')
@@ -84,21 +84,24 @@ def test_each_complete_app(load_app, relative, stage):
 def test_search_rebuild_and_tools(load_app):
     main, directory = load_app('sample-app')
     knowledge = importlib.import_module('knowledge')
-    vectors = importlib.import_module('embeddings')
     functions = importlib.import_module('assignment_tools')
     assert len(knowledge.all_chunks()) == 10
     assert knowledge.search_keyword('zzzz-no-match', 3) == []
-    found = knowledge.search_keyword('SQLite 保存', 3)
+    assert not (directory / 'embeddings.py').exists()
+    assert knowledge.extract_words('SQLiteに保存するには？') == ['sqlite', '保存']
+    assert knowledge.extract_words('ページを閉じてもデータが残るのはなぜ？') == ['ページ', '閉じる', 'データ', '残る']
+    found = knowledge.search_keyword('SQLiteに保存するには？', 3)
+    headings = []
+    for chunk in found:
+        headings.append(chunk['heading'])
+    assert 'SQLiteと永続化' in headings
     assert found[0]['score'] == 2
     assert len(found) <= 3
-    assert vectors.cosine_similarity([1,0],[1,0]) == 1
-    assert vectors.cosine_similarity([1,0],[0,1]) == 0
-    assert vectors.cosine_similarity([0,0],[1,0]) == 0
-    vectors.build_embeddings()
-    assert vectors.search_vector('SQLite 保存', 3)
-    knowledge.init_documents()
-    with pytest.raises(ValueError, match='ベクトル'):
-        vectors.search_vector('SQLite',3)
+    client = TestClient(main.app)
+    response = client.post('/api/ask', json={'question': 'SQLiteに保存するには？', 'mode': 'keyword'})
+    assert response.json()['keywords'] == ['sqlite', '保存']
+    assert client.post('/api/ask', json={'question': 'は？', 'mode': 'keyword'}).status_code == 400
+    assert client.post('/api/ask', json={'question': 'a', 'mode': 'vector'}).status_code == 422
     assert len(functions.get_assignments('pending')) == 2
     assert len(functions.get_assignments('done')) == 1
     assert len(functions.get_assignments('all')) == 3

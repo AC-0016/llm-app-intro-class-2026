@@ -1,6 +1,16 @@
 """資料の読み込みと検索。1つの関数を順番に追える書き方にする。"""
 import sqlite3
+from janome.tokenizer import Tokenizer
 from settings import BASE_DIR, DATABASE
+
+# 辞書の読み込みに時間がかかるため、起動時に1回だけ作る。
+tokenizer = Tokenizer()
+# 検索に使う品詞。助詞・助動詞・記号などは除く。
+CONTENT_POS = ['名詞', '動詞', '形容詞']
+# 内容を持たない名詞の細分類。「の」「それ」「〜物」など。
+SKIP_DETAILS = ['非自立', '代名詞', '接尾']
+# どの資料にも出てくるため、一致しても手がかりにならない語。
+STOP_WORDS = ['する', 'ある', 'いる', 'なる', 'できる', 'れる', 'られる']
 
 
 def read_documents():
@@ -39,10 +49,9 @@ def init_documents():
     conn = sqlite3.connect(DATABASE)
     cursor = conn.cursor()
     cursor.execute('''CREATE TABLE IF NOT EXISTS chunks (
-        id INTEGER PRIMARY KEY, source TEXT, title TEXT, heading TEXT, body TEXT,
-        embedding TEXT, embedding_model TEXT
+        id INTEGER PRIMARY KEY, source TEXT, title TEXT, heading TEXT, body TEXT
     )''')
-    # data/ が原本。再登録時に削除した資料も反映し、古いベクトルも消す。
+    # data/ が原本。再登録時に削除した資料も反映する。
     cursor.execute('DELETE FROM chunks')
     for number, chunk in enumerate(chunks, start=1):
         cursor.execute(
@@ -67,16 +76,34 @@ def all_chunks():
     return chunks
 
 
-def search_keyword(search_text, top_k):
-    # 日本語の形態素解析を省く。検索欄に「SQLite 保存」と空白区切りで入力する。
-    words = search_text.lower().split()
+def extract_words(text):
+    # Janomeで形態素に分け、名詞・動詞・形容詞の基本形だけを取り出す。
+    # 「保存する」「保存して」はどちらも「保存」「する」になり、活用の違いを吸収できる。
+    words = []
+    for token in tokenizer.tokenize(text):
+        pos = token.part_of_speech.split(',')
+        if pos[0] not in CONTENT_POS or pos[1] in SKIP_DETAILS:
+            continue
+        word = token.base_form
+        if word == '*':
+            word = token.surface
+        word = word.lower()
+        if word not in STOP_WORDS and word not in words:
+            words.append(word)
+    return words
+
+
+def search_keyword(question, top_k):
+    # 質問文から検索語を自動で取り出す。空白区切りの入力は不要。
+    words = extract_words(question)
     results = []
     for chunk in all_chunks():
-        text = (chunk['title'] + ' ' + chunk['heading'] + ' ' + chunk['body']).lower()
+        # 部分一致ではなく、資料側も同じ方法で単語に分けて比べる。
+        chunk_words = extract_words(chunk['title'] + '\n' + chunk['heading'] + '\n' + chunk['body'])
         score = 0
         # BEGIN EXERCISE keyword
         for word in words:
-            if word in text:
+            if word in chunk_words:
                 score += 1
         # END EXERCISE keyword
         if score > 0:

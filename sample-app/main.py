@@ -9,8 +9,7 @@ from pydantic import BaseModel, Field
 from openai import APIError, APITimeoutError, RateLimitError
 from settings import BASE_DIR, DATABASE
 from llm import ask_plain, ask_with_context, build_context
-from knowledge import init_documents, all_chunks, search_keyword
-from embeddings import search_vector
+from knowledge import init_documents, all_chunks, search_keyword, extract_words
 from assignment_tools import init_assignments, ask_assignments
 
 # DBが無い初回だけ資料を登録。更新はサーバーを止めてinit_db.pyを実行する。
@@ -23,8 +22,7 @@ app = FastAPI(title='授業資料アシスタント')
 
 class Question(BaseModel):
     question: str = Field(min_length=1, max_length=500)
-    mode: Literal['plain', 'context', 'keyword', 'vector', 'tools'] = 'keyword'
-    search_text: str = Field(default='', max_length=100)
+    mode: Literal['plain', 'context', 'keyword', 'tools'] = 'keyword'
     top_k: int = Field(default=3, ge=1, le=5)
 
 
@@ -64,13 +62,12 @@ def ask(request: Question):
             chunks = all_chunks()
             result = ask_with_context(question, chunks)
         elif request.mode == 'keyword':
-            if not request.search_text.strip():
-                raise ValueError('検索語を空白区切りで入力してください。例: SQLite 保存')
-            chunks = search_keyword(request.search_text, request.top_k)
+            keywords = extract_words(question)
+            if not keywords:
+                raise ValueError('質問から検索語を取り出せませんでした。名詞を含めて質問してください。')
+            chunks = search_keyword(question, request.top_k)
             result = ask_with_context(question, chunks)
-        elif request.mode == 'vector':
-            chunks = search_vector(question, request.top_k)
-            result = ask_with_context(question, chunks)
+            result['keywords'] = keywords
         elif request.mode == 'tools':
             result = ask_assignments(question)
     except NotImplementedError as error:

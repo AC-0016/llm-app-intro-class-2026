@@ -14,7 +14,7 @@ function renderSources(sources) {
     body.textContent = source.body;
     const filename = document.createElement('small');
     filename.textContent = '原本: data/' + source.source;
-    if (source.score !== undefined) filename.textContent += ' / 検索スコア: ' + source.score.toFixed(3);
+    if (source.score !== undefined) filename.textContent += ' / 検索スコア: ' + source.score;
     item.appendChild(title);
     item.appendChild(body);
     item.appendChild(filename);
@@ -42,7 +42,6 @@ async function askQuestion(event) {
       body: JSON.stringify({
         question: question,
         mode: document.getElementById('mode').value,
-        search_text: document.getElementById('search-text').value,
         top_k: Number(document.getElementById('top-k').value)
       })
     });
@@ -57,6 +56,7 @@ async function askQuestion(event) {
     document.getElementById('answer').textContent = data.answer;
     renderSources(data.sources);
     document.getElementById('debug').textContent = JSON.stringify({
+      keywords: data.keywords,
       context: data.context,
       tool_results: data.tool_results,
       input_tokens: data.input_tokens,
