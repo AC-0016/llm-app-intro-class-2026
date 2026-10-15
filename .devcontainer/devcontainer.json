@@ -17,9 +17,12 @@
       }
     }
   },
-  "forwardPorts": [8000],
+  "forwardPorts": [8000, 8001, 8002, 8003],
   "portsAttributes": {
-    "8000": {"label": "授業資料アシスタント", "onAutoForward": "openBrowser", "visibility": "private"}
+    "8000": {"label": "キーワード検索アプリ・各回の演習", "onAutoForward": "openBrowser", "visibility": "private"},
+    "8001": {"label": "制作の進捗アプリ", "onAutoForward": "openBrowser", "visibility": "private"},
+    "8002": {"label": "チャットアプリ", "onAutoForward": "openBrowser", "visibility": "private"},
+    "8003": {"label": "ベクトル検索アプリ", "onAutoForward": "openBrowser", "visibility": "private"}
   },
   "remoteUser": "vscode"
 }
