@@ -57,14 +57,7 @@ def chat(request: ChatRequest):
     # 送られてきた履歴を確かめる。
     question = history[-1]
     # TODO: 履歴の3つの確認を完成させる。下のコメントを外し、仮の501エラーの行を消す。
-    # if question['role'] != 'user':
-        # raise HTTPException(status_code=400, detail='最後は質問（user）にしてください。')
-    # if len(question['content']) > 500:
-        # raise HTTPException(status_code=400, detail='質問は500文字以内で入力してください。')
-    # if len(history) > MAX_TURNS * 2 - 1:
-        # raise HTTPException(status_code=400, detail=f'質問は{MAX_TURNS}回までです。会話をリセットしてください。')
-    raise HTTPException(status_code=501, detail='TODO: main.py の chat() で、履歴の確認を完成させる')
-
+    
     try:
         result = ask_with_history(history, MODEL, INSTRUCTIONS)
     except ValueError as error:
