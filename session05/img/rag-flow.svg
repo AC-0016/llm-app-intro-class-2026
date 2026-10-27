@@ -1,0 +1,57 @@
+<svg xmlns="http://www.w3.org/2000/svg"
+     width="1160" height="270" viewBox="0 0 1160 270"
+     font-family="'Noto Sans CJK JP', 'Noto Sans JP', sans-serif">
+
+  <!-- 質問 -->
+  <rect x="0" y="40" width="100" height="110" rx="12" fill="#b45309"/>
+  <text x="50" y="103" text-anchor="middle" font-size="22" font-weight="bold" fill="white">質問</text>
+
+  <path d="M102 95 H128" stroke="#93c5fd" stroke-width="4" fill="none"/>
+  <polygon points="140,95 126,86 126,104" fill="#93c5fd"/>
+
+  <!-- ① 検索 -->
+  <rect x="144" y="22" width="258" height="146" rx="12" fill="#1e40af" stroke="#f59e0b" stroke-width="4"/>
+  <rect x="336" y="32" width="56" height="26" rx="6" fill="#b45309"/>
+  <text x="364" y="51" text-anchor="middle" font-size="15" font-weight="bold" fill="white">今日</text>
+  <text x="160" y="84" font-size="19" font-weight="bold" fill="white">① 検索（Retrieval）</text>
+  <text x="160" y="118" font-size="18" fill="#dbeafe">関係する資料を選ぶ</text>
+  <text x="160" y="152" font-size="16" fill="#bfdbfe">search.py</text>
+
+  <path d="M406 95 H432" stroke="#93c5fd" stroke-width="4" fill="none"/>
+  <polygon points="444,95 430,86 430,104" fill="#93c5fd"/>
+
+  <!-- ② 加える -->
+  <rect x="448" y="20" width="262" height="150" rx="12" fill="#334155"/>
+  <rect x="646" y="30" width="54" height="26" rx="6" fill="#475569"/>
+  <text x="673" y="49" text-anchor="middle" font-size="15" fill="#e2e8f0">前回</text>
+  <text x="464" y="84" font-size="19" font-weight="bold" fill="white">② 加える（Augmented）</text>
+  <text x="464" y="118" font-size="18" fill="#e2e8f0">資料を質問と一緒に input へ</text>
+  <text x="464" y="152" font-size="16" fill="#94a3b8">llm.py build_context()</text>
+
+  <path d="M712 95 H738" stroke="#93c5fd" stroke-width="4" fill="none"/>
+  <polygon points="750,95 736,86 736,104" fill="#93c5fd"/>
+
+  <!-- ③ 生成 -->
+  <rect x="752" y="20" width="262" height="150" rx="12" fill="#334155"/>
+  <rect x="950" y="30" width="54" height="26" rx="6" fill="#475569"/>
+  <text x="977" y="49" text-anchor="middle" font-size="15" fill="#e2e8f0">前回</text>
+  <text x="768" y="84" font-size="19" font-weight="bold" fill="white">③ 生成（Generation）</text>
+  <text x="768" y="118" font-size="18" fill="#e2e8f0">LLMが資料をもとに答える</text>
+  <text x="768" y="152" font-size="16" fill="#94a3b8">llm.py ask_with_documents()</text>
+
+  <path d="M1016 95 H1036" stroke="#93c5fd" stroke-width="4" fill="none"/>
+  <polygon points="1048,95 1034,86 1034,104" fill="#93c5fd"/>
+
+  <!-- 回答 -->
+  <rect x="1050" y="40" width="110" height="110" rx="12" fill="#475569"/>
+  <text x="1105" y="103" text-anchor="middle" font-size="22" font-weight="bold" fill="white">回答</text>
+
+  <!-- 検索のやり方 -->
+  <path d="M273 172 V196" stroke="#f59e0b" stroke-width="3" fill="none"/>
+  <rect x="144" y="196" width="420" height="68" rx="10" fill="none" stroke="#f59e0b" stroke-width="2"/>
+  <text x="160" y="224" font-size="18" fill="#fcd34d">今日：単語の一致で探す（keyword-app）</text>
+  <text x="160" y="252" font-size="18" fill="#94a3b8">次回：意味の近さで探す（vector-app）</text>
+
+  <text x="600" y="224" font-size="18" fill="#cbd5e1">探す場所は、登録した授業資料（36件）。</text>
+  <text x="600" y="252" font-size="18" fill="#cbd5e1">LLMが見るのは、入力に入れた資料と質問だけ。</text>
+</svg>

@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg"
+     width="1160" height="312" viewBox="0 0 1160 312"
+     font-family="'Noto Sans CJK JP', 'Noto Sans JP', sans-serif">
+
+  <!-- sample-app -->
+  <rect x="0" y="10" width="400" height="296" rx="14" fill="#1f2937" stroke="#64748b" stroke-width="2"/>
+  <text x="20" y="48" font-size="24" font-weight="bold" fill="white">sample-app/</text>
+  <text x="20" y="78" font-size="17" fill="#94a3b8">見本。読むだけで、変えない</text>
+  <text x="40" y="120" font-size="19" fill="#cbd5e1">chat-app/</text>
+  <text x="40" y="152" font-size="19" fill="#cbd5e1">keyword-app/</text>
+  <text x="40" y="184" font-size="19" fill="#cbd5e1">vector-app/</text>
+  <text x="40" y="216" font-size="19" fill="#cbd5e1">progress-app/</text>
+  <text x="40" y="248" font-size="19" fill="#cbd5e1">llm-call/</text>
+  <text x="40" y="280" font-size="19" fill="#cbd5e1">README.md</text>
+
+  <!-- 矢印 -->
+  <path d="M410 150 H486" stroke="#93c5fd" stroke-width="4" fill="none"/>
+  <polygon points="500,150 484,140 484,160" fill="#93c5fd"/>
+  <text x="455" y="128" text-anchor="middle" font-size="16" fill="#93c5fd">同じ中身が</text>
+  <text x="455" y="185" text-anchor="middle" font-size="16" fill="#93c5fd">最初から</text>
+
+  <!-- your-app -->
+  <rect x="510" y="10" width="650" height="296" rx="14" fill="#0b2e2b" stroke="#14b8a6" stroke-width="3"/>
+  <text x="530" y="48" font-size="24" font-weight="bold" fill="white">your-app/</text>
+  <text x="530" y="78" font-size="17" fill="#99f6e4">制作用。出発点のフォルダを1つ選んで、そのまま書き換える</text>
+
+  <text x="550" y="120" font-size="19" fill="#cbd5e1">chat-app/</text>
+  <text x="760" y="120" font-size="17" fill="#94a3b8">8000</text>
+  <rect x="540" y="131" width="600" height="30" rx="6" fill="#0f766e"/>
+  <text x="550" y="152" font-size="19" font-weight="bold" fill="white">keyword-app/</text>
+  <text x="760" y="152" font-size="17" fill="#ccfbf1">8001　← 出発点の例。ここを書き換える</text>
+  <text x="550" y="184" font-size="19" fill="#cbd5e1">vector-app/</text>
+  <text x="760" y="184" font-size="17" fill="#94a3b8">8002</text>
+  <text x="550" y="216" font-size="19" fill="#cbd5e1">progress-app/</text>
+  <text x="760" y="216" font-size="17" fill="#94a3b8">8003</text>
+  <text x="550" y="248" font-size="19" fill="#64748b">llm-call/</text>
+  <text x="760" y="248" font-size="17" fill="#64748b">出発点にしない</text>
+  <rect x="540" y="259" width="600" height="30" rx="6" fill="#713f12"/>
+  <text x="550" y="280" font-size="19" font-weight="bold" fill="white">README.md</text>
+  <text x="760" y="280" font-size="17" fill="#fde68a">自分のREADMEに置き換える（提出するURL）</text>
+</svg>

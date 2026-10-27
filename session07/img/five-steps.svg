@@ -1,0 +1,63 @@
+<svg xmlns="http://www.w3.org/2000/svg"
+     width="1160" height="420" viewBox="0 0 1160 420"
+     font-family="'Noto Sans CJK JP', 'Noto Sans JP', sans-serif">
+
+  <!-- 登場する3者 -->
+  <rect x="130" y="0" width="240" height="60" rx="12" fill="#1e40af"/>
+  <text x="250" y="38" text-anchor="middle" font-size="22" font-weight="bold" fill="white">LLM（OpenAI API）</text>
+
+  <rect x="500" y="0" width="280" height="60" rx="12" fill="#0f766e"/>
+  <text x="640" y="28" text-anchor="middle" font-size="22" font-weight="bold" fill="white">Python</text>
+  <text x="640" y="50" text-anchor="middle" font-size="15" fill="#ccfbf1">llm.py・progress_db.py</text>
+
+  <rect x="890" y="0" width="220" height="60" rx="12" fill="#475569"/>
+  <text x="1000" y="28" text-anchor="middle" font-size="22" font-weight="bold" fill="white">SQLite</text>
+  <text x="1000" y="50" text-anchor="middle" font-size="15" fill="#e2e8f0">progress.db</text>
+
+  <!-- 生存線 -->
+  <g stroke="#64748b" stroke-width="2" stroke-dasharray="6 6">
+    <path d="M250 62 V412"/>
+    <path d="M640 62 V412"/>
+    <path d="M1000 62 V306"/>
+  </g>
+
+  <!-- 1回目・2回目 -->
+  <rect x="10" y="122" width="96" height="40" rx="8" fill="#334155"/>
+  <text x="58" y="149" text-anchor="middle" font-size="17" font-weight="bold" fill="#93c5fd">1回目</text>
+  <rect x="10" y="346" width="96" height="40" rx="8" fill="#334155"/>
+  <text x="58" y="373" text-anchor="middle" font-size="17" font-weight="bold" fill="#93c5fd">2回目</text>
+
+  <!-- ① Python → LLM -->
+  <text x="445" y="100" text-anchor="middle" font-size="18" fill="white">① 質問と、使える関数の説明（TOOLS）</text>
+  <path d="M638 112 H266" stroke="#93c5fd" stroke-width="3" fill="none"/>
+  <polygon points="252,112 268,103 268,121" fill="#93c5fd"/>
+
+  <!-- ② LLM → Python -->
+  <text x="445" y="164" text-anchor="middle" font-size="18" fill="white">② 呼びたい関数名と引数を返す</text>
+  <path d="M252 176 H624" stroke="#fcd34d" stroke-width="3" fill="none"/>
+  <polygon points="638,176 622,167 622,185" fill="#fcd34d"/>
+  <text x="445" y="202" text-anchor="middle" font-size="16" fill="#fcd34d">get_tasks　{"status": "todo"}</text>
+
+  <!-- ③ Python → SQLite -->
+  <text x="820" y="236" text-anchor="middle" font-size="18" fill="white">③ 確かめてから、決まったSQL</text>
+  <path d="M642 248 H984" stroke="#5eead4" stroke-width="3" fill="none"/>
+  <polygon points="998,248 982,239 982,257" fill="#5eead4"/>
+  <text x="820" y="282" text-anchor="middle" font-size="16" fill="#94a3b8">done = 0 の行</text>
+  <path d="M998 294 H656" stroke="#94a3b8" stroke-width="2" fill="none" stroke-dasharray="7 5"/>
+  <polygon points="642,294 658,286 658,302" fill="#94a3b8"/>
+
+  <!-- ④ Python → LLM -->
+  <text x="445" y="324" text-anchor="middle" font-size="18" fill="white">④ 実行結果（JSON）を送る</text>
+  <path d="M638 336 H266" stroke="#93c5fd" stroke-width="3" fill="none"/>
+  <polygon points="252,336 268,327 268,345" fill="#93c5fd"/>
+
+  <!-- ⑤ LLM → Python -->
+  <text x="445" y="388" text-anchor="middle" font-size="18" fill="white">⑤ 結果をもとに回答文を作る</text>
+  <path d="M252 400 H624" stroke="#93c5fd" stroke-width="3" fill="none"/>
+  <polygon points="638,400 622,391 622,409" fill="#93c5fd"/>
+
+  <!-- 注記 -->
+  <rect x="800" y="330" width="350" height="76" rx="10" fill="none" stroke="#f59e0b" stroke-width="2"/>
+  <text x="975" y="362" text-anchor="middle" font-size="17" fill="#fcd34d">LLMはSQLiteに触れない</text>
+  <text x="975" y="390" text-anchor="middle" font-size="16" fill="#e2e8f0">作るのは関数名と引数の文字列だけ</text>
+</svg>

@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg"
+     width="1160" height="330" viewBox="0 0 1160 330"
+     font-family="'Noto Sans CJK JP', 'Noto Sans JP', sans-serif">
+
+  <!-- 流れ -->
+  <rect x="0" y="10" width="210" height="110" rx="14" fill="#334155"/>
+  <text x="105" y="54" text-anchor="middle" font-size="24" font-weight="bold" fill="white">質問</text>
+  <text x="105" y="88" text-anchor="middle" font-size="17" fill="#cbd5e1">評価用質問10問</text>
+
+  <path d="M214 65 H254" stroke="#93c5fd" stroke-width="4" fill="none"/>
+  <polygon points="268,65 252,55 252,75" fill="#93c5fd"/>
+
+  <rect x="272" y="10" width="290" height="110" rx="14" fill="#0f766e"/>
+  <text x="417" y="54" text-anchor="middle" font-size="24" font-weight="bold" fill="white">検索</text>
+  <text x="417" y="88" text-anchor="middle" font-size="17" fill="#ccfbf1">上位3件（TOP_K）を選ぶ</text>
+
+  <path d="M566 65 H606" stroke="#93c5fd" stroke-width="4" fill="none"/>
+  <polygon points="620,65 604,55 604,75" fill="#93c5fd"/>
+
+  <rect x="624" y="10" width="230" height="110" rx="14" fill="#1e40af"/>
+  <text x="739" y="54" text-anchor="middle" font-size="24" font-weight="bold" fill="white">LLM</text>
+  <text x="739" y="88" text-anchor="middle" font-size="17" fill="#dbeafe">資料と質問を読んで書く</text>
+
+  <path d="M858 65 H898" stroke="#93c5fd" stroke-width="4" fill="none"/>
+  <polygon points="912,65 896,55 896,75" fill="#93c5fd"/>
+
+  <rect x="916" y="10" width="244" height="110" rx="14" fill="#b45309"/>
+  <text x="1038" y="54" text-anchor="middle" font-size="24" font-weight="bold" fill="white">回答</text>
+  <text x="1038" y="88" text-anchor="middle" font-size="17" fill="#fef3c7">[資料18] などのID付き</text>
+
+  <!-- 評価 -->
+  <path d="M417 124 V176" stroke="#5eead4" stroke-width="3" stroke-dasharray="6 5" fill="none"/>
+  <path d="M1038 124 V176" stroke="#fcd34d" stroke-width="3" stroke-dasharray="6 5" fill="none"/>
+
+  <rect x="172" y="180" width="490" height="140" rx="14" fill="#1e293b" stroke="#0f766e" stroke-width="3"/>
+  <text x="192" y="216" font-size="21" font-weight="bold" fill="#5eead4">検索の評価</text>
+  <text x="192" y="252" font-size="19" fill="white">期待する根拠が3件に入ったか</text>
+  <text x="192" y="290" font-size="22" font-weight="bold" fill="#fcd34d">全部 ・ 一部 ・ なし</text>
+
+  <rect x="700" y="180" width="460" height="140" rx="14" fill="#1e293b" stroke="#b45309" stroke-width="3"/>
+  <text x="720" y="216" font-size="21" font-weight="bold" fill="#fdba74">回答の評価</text>
+  <text x="720" y="252" font-size="19" fill="white">本文と照合してから、各0〜2点</text>
+  <text x="720" y="290" font-size="22" font-weight="bold" fill="#fcd34d">正確さ ・ 根拠 ・ 対応</text>
+
+  <text x="681" y="256" text-anchor="middle" font-size="16" fill="#94a3b8">別に</text>
+  <text x="681" y="278" text-anchor="middle" font-size="16" fill="#94a3b8">記録</text>
+</svg>

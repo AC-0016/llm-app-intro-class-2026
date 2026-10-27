@@ -7,11 +7,12 @@
 
 | フォルダ | 内容 |
 |---|---|
-| `sample-app/` | 完成版のアプリ5つ。演習の答えであり、制作の出発点。詳しくは `sample-app/README.md` |
-| `session01/` 〜 `session08/` | 各回のスライド（`slidesNN.md`、Marp形式）と、穴あきの演習コード（`exercise/`） |
+| `sample-app/` | 完成版のアプリ5つ。演習の答えであり、制作の見本（書き換えずに残す）。詳しくは `sample-app/README.md` |
+| `your-app/` | 第9〜13回の制作用。`sample-app/` と同じ5つのフォルダと `README.md`。出発点に選んだフォルダをそのまま書き換える |
+| `session01/` 〜 `session09/` | 各回のスライド（`slidesNN.md`、Marp形式）と、穴あきの演習コード（`exercise/`） |
 
 `sessionNN/exercise/` は `sample-app/` の該当アプリをコピーして、`TODO` の場所に穴を開けたものです。
-第1回は演習コードがありません。第8回は記入用のテンプレートです。
+第1回と第9回は演習コードがありません。第8回は記入用のテンプレートです。
 
 | 回 | 使うアプリ | 演習で埋める場所 |
 |---|---|---|
@@ -23,6 +24,7 @@
 | 6 | vector-app | `search.py` のコサイン類似度としきい値 |
 | 7 | progress-app | `progress_db.py` のSQLの選択、`llm.py` の関数の選択 |
 | 8 | keyword-app、vector-app | `evaluation.md` と `design.md` の記入 |
+| 9 | your-app | なし（制作の開始。`your-app/README.md` を自分のREADMEに置き換え、`session08/exercise/design.md` を仕上げる） |
 
 ## 毎回の流れ
 

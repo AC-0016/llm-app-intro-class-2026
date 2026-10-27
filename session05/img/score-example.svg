@@ -1,0 +1,86 @@
+<svg xmlns="http://www.w3.org/2000/svg"
+     width="1160" height="310" viewBox="0 0 1160 310"
+     font-family="'Noto Sans CJK JP', 'Noto Sans JP', sans-serif">
+
+  <!-- 検索語 -->
+  <text x="0" y="34" font-size="18" fill="#94a3b8">検索語</text>
+  <rect x="0" y="48" width="190" height="44" rx="8" fill="#b45309"/>
+  <text x="95" y="77" text-anchor="middle" font-size="20" font-weight="bold" fill="white">transformer</text>
+  <rect x="0" y="104" width="190" height="44" rx="8" fill="#b45309"/>
+  <text x="95" y="133" text-anchor="middle" font-size="20" font-weight="bold" fill="white">attention</text>
+  <text x="0" y="178" font-size="15" fill="#94a3b8">質問「Transformerの</text>
+  <text x="0" y="198" font-size="15" fill="#94a3b8">Attentionとは？」から</text>
+
+  <!-- 9枚目「Transformerの考え方」 -->
+  <text x="230" y="38" font-size="17" font-weight="bold" fill="white">9枚目「Transformerの考え方」</text>
+  <text x="560" y="38" font-size="15" fill="#94a3b8">words（抜粋）</text>
+  <rect x="230" y="50" width="46" height="32" rx="6" fill="#334155"/>
+  <text x="253" y="72" text-anchor="middle" font-size="16" fill="#e2e8f0">llm</text>
+  <rect x="284" y="50" width="120" height="32" rx="6" fill="#b45309"/>
+  <text x="344" y="72" text-anchor="middle" font-size="16" font-weight="bold" fill="white">transformer</text>
+  <rect x="412" y="50" width="66" height="32" rx="6" fill="#334155"/>
+  <text x="445" y="72" text-anchor="middle" font-size="16" fill="#e2e8f0">考え方</text>
+  <rect x="486" y="50" width="50" height="32" rx="6" fill="#334155"/>
+  <text x="511" y="72" text-anchor="middle" font-size="16" fill="#e2e8f0">言葉</text>
+  <rect x="544" y="50" width="50" height="32" rx="6" fill="#334155"/>
+  <text x="569" y="72" text-anchor="middle" font-size="16" fill="#e2e8f0">意味</text>
+  <rect x="602" y="50" width="34" height="32" rx="6" fill="#1e293b"/>
+  <text x="619" y="72" text-anchor="middle" font-size="16" fill="#e2e8f0">…</text>
+  <rect x="644" y="50" width="102" height="32" rx="6" fill="#b45309"/>
+  <text x="695" y="72" text-anchor="middle" font-size="16" font-weight="bold" fill="white">attention</text>
+  <rect x="753" y="50" width="50" height="32" rx="6" fill="#334155"/>
+  <text x="778" y="72" text-anchor="middle" font-size="16" fill="#e2e8f0">文脈</text>
+  <rect x="811" y="50" width="50" height="32" rx="6" fill="#334155"/>
+  <text x="836" y="72" text-anchor="middle" font-size="16" fill="#e2e8f0">計算</text>
+  <rect x="869" y="50" width="34" height="32" rx="6" fill="#1e293b"/>
+  <text x="886" y="72" text-anchor="middle" font-size="16" fill="#e2e8f0">…</text>
+  <text x="1160" y="74" text-anchor="end" font-size="26" font-weight="bold" fill="#fcd34d">2点</text>
+
+  <!-- 8枚目「言語モデルの簡単な歴史」 -->
+  <text x="230" y="126" font-size="17" font-weight="bold" fill="white">8枚目「言語モデルの簡単な歴史」</text>
+  <text x="560" y="126" font-size="15" fill="#94a3b8">words（抜粋）</text>
+  <rect x="230" y="138" width="46" height="32" rx="6" fill="#334155"/>
+  <text x="253" y="160" text-anchor="middle" font-size="16" fill="#e2e8f0">llm</text>
+  <rect x="284" y="138" width="50" height="32" rx="6" fill="#334155"/>
+  <text x="309" y="160" text-anchor="middle" font-size="16" fill="#e2e8f0">言語</text>
+  <rect x="342" y="138" width="66" height="32" rx="6" fill="#334155"/>
+  <text x="375" y="160" text-anchor="middle" font-size="16" fill="#e2e8f0">モデル</text>
+  <rect x="416" y="138" width="50" height="32" rx="6" fill="#334155"/>
+  <text x="441" y="160" text-anchor="middle" font-size="16" fill="#e2e8f0">歴史</text>
+  <rect x="474" y="138" width="34" height="32" rx="6" fill="#1e293b"/>
+  <text x="491" y="160" text-anchor="middle" font-size="16" fill="#e2e8f0">…</text>
+  <rect x="516" y="138" width="120" height="32" rx="6" fill="#b45309"/>
+  <text x="576" y="160" text-anchor="middle" font-size="16" font-weight="bold" fill="white">transformer</text>
+  <rect x="644" y="138" width="50" height="32" rx="6" fill="#334155"/>
+  <text x="669" y="160" text-anchor="middle" font-size="16" fill="#e2e8f0">論文</text>
+  <rect x="702" y="138" width="50" height="32" rx="6" fill="#334155"/>
+  <text x="727" y="160" text-anchor="middle" font-size="16" fill="#e2e8f0">発表</text>
+  <rect x="760" y="138" width="34" height="32" rx="6" fill="#1e293b"/>
+  <text x="777" y="160" text-anchor="middle" font-size="16" fill="#e2e8f0">…</text>
+  <text x="1160" y="162" text-anchor="end" font-size="26" font-weight="bold" fill="#fcd34d">1点</text>
+
+  <!-- 10枚目「トークンと生成」 -->
+  <text x="230" y="214" font-size="17" font-weight="bold" fill="white">10枚目「トークンと生成」</text>
+  <text x="560" y="214" font-size="15" fill="#94a3b8">words（抜粋）</text>
+  <rect x="230" y="226" width="46" height="32" rx="6" fill="#334155"/>
+  <text x="253" y="248" text-anchor="middle" font-size="16" fill="#e2e8f0">llm</text>
+  <rect x="284" y="226" width="50" height="32" rx="6" fill="#334155"/>
+  <text x="309" y="248" text-anchor="middle" font-size="16" fill="#e2e8f0">生成</text>
+  <rect x="342" y="226" width="66" height="32" rx="6" fill="#334155"/>
+  <text x="375" y="248" text-anchor="middle" font-size="16" fill="#e2e8f0">モデル</text>
+  <rect x="416" y="226" width="50" height="32" rx="6" fill="#334155"/>
+  <text x="441" y="248" text-anchor="middle" font-size="16" fill="#e2e8f0">文章</text>
+  <rect x="474" y="226" width="50" height="32" rx="6" fill="#334155"/>
+  <text x="499" y="248" text-anchor="middle" font-size="16" fill="#e2e8f0">単語</text>
+  <rect x="532" y="226" width="34" height="32" rx="6" fill="#1e293b"/>
+  <text x="549" y="248" text-anchor="middle" font-size="16" fill="#e2e8f0">…</text>
+  <rect x="574" y="226" width="50" height="32" rx="6" fill="#334155"/>
+  <text x="599" y="248" text-anchor="middle" font-size="16" fill="#e2e8f0">計算</text>
+  <rect x="632" y="226" width="66" height="32" rx="6" fill="#334155"/>
+  <text x="665" y="248" text-anchor="middle" font-size="16" fill="#e2e8f0">仕組み</text>
+  <rect x="706" y="226" width="34" height="32" rx="6" fill="#1e293b"/>
+  <text x="723" y="248" text-anchor="middle" font-size="16" fill="#e2e8f0">…</text>
+  <text x="1160" y="250" text-anchor="end" font-size="26" font-weight="bold" fill="#94a3b8">0点 → 外す</text>
+
+  <text x="0" y="300" font-size="18" fill="#cbd5e1">検索語1つにつき1点。資料の中に何回出ても1点。0点の資料は候補から外す。</text>
+</svg>

@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg"
+     width="1160" height="270" viewBox="0 0 1160 270"
+     font-family="'Noto Sans CJK JP', 'Noto Sans JP', sans-serif">
+
+  <!-- リポジトリ -->
+  <rect x="380" y="0" width="400" height="56" rx="12" fill="#334155"/>
+  <text x="580" y="36" text-anchor="middle" font-size="20" font-weight="bold" fill="white">自分のfork（llm-app-intro-class-2026）</text>
+
+  <g stroke="#93c5fd" stroke-width="3" fill="none">
+    <path d="M580 58 V80"/>
+    <path d="M180 80 H980"/>
+    <path d="M180 80 V100"/>
+    <path d="M580 80 V100"/>
+    <path d="M980 80 V100"/>
+  </g>
+
+  <!-- sample-app -->
+  <rect x="0" y="100" width="360" height="160" rx="14" fill="#1e293b" stroke="#64748b" stroke-width="2"/>
+  <text x="20" y="136" font-size="22" font-weight="bold" fill="#93c5fd">sample-app/</text>
+  <text x="20" y="172" font-size="18" fill="white">完成版の見本</text>
+  <text x="20" y="204" font-size="18" fill="#cbd5e1">読む・答え合わせに使う</text>
+  <text x="20" y="236" font-size="18" fill="#cbd5e1">書き換えない</text>
+
+  <!-- your-app -->
+  <rect x="390" y="100" width="380" height="160" rx="14" fill="#0f766e"/>
+  <text x="410" y="136" font-size="22" font-weight="bold" fill="white">your-app/</text>
+  <text x="410" y="170" font-size="17" fill="#ccfbf1">chat-app / keyword-app / vector-app</text>
+  <text x="410" y="196" font-size="17" fill="#ccfbf1">progress-app / llm-call / README.md</text>
+  <text x="410" y="236" font-size="18" font-weight="bold" fill="#fcd34d">出発点のフォルダを書き換える</text>
+
+  <!-- session08 -->
+  <rect x="800" y="100" width="360" height="160" rx="14" fill="#1e293b" stroke="#b45309" stroke-width="3"/>
+  <text x="820" y="136" font-size="22" font-weight="bold" fill="#fdba74">session08/exercise/</text>
+  <text x="820" y="172" font-size="18" fill="white">evaluation.md（評価表）</text>
+  <text x="820" y="204" font-size="18" fill="white">design.md（企画の下書き）</text>
+  <text x="820" y="236" font-size="18" fill="#cbd5e1">今日の提出物</text>
+</svg>

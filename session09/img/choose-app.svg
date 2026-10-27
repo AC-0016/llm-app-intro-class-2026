@@ -1,0 +1,53 @@
+<svg xmlns="http://www.w3.org/2000/svg"
+     width="1160" height="350" viewBox="0 0 1160 350"
+     font-family="'Noto Sans CJK JP', 'Noto Sans JP', sans-serif">
+
+  <!-- 最初の問い -->
+  <rect x="0" y="120" width="250" height="110" rx="12" fill="#334155"/>
+  <text x="125" y="165" text-anchor="middle" font-size="20" font-weight="bold" fill="white">答えの根拠になる</text>
+  <text x="125" y="195" text-anchor="middle" font-size="20" font-weight="bold" fill="white">資料がある？</text>
+
+  <!-- 枝 -->
+  <path d="M252 160 C290 160 290 82 318 82" stroke="#93c5fd" stroke-width="3" fill="none"/>
+  <polygon points="330,82 316,73 316,91" fill="#93c5fd"/>
+  <text x="308" y="150" text-anchor="middle" font-size="17" fill="#93c5fd">ある</text>
+  <path d="M252 190 C290 190 290 268 318 268" stroke="#93c5fd" stroke-width="3" fill="none"/>
+  <polygon points="330,268 316,259 316,277" fill="#93c5fd"/>
+  <text x="308" y="208" text-anchor="middle" font-size="17" fill="#93c5fd">ない</text>
+
+  <!-- 2段目の問い -->
+  <rect x="332" y="42" width="300" height="80" rx="12" fill="#334155"/>
+  <text x="482" y="76" text-anchor="middle" font-size="19" font-weight="bold" fill="white">質問は資料と</text>
+  <text x="482" y="104" text-anchor="middle" font-size="19" font-weight="bold" fill="white">同じ語で来る？</text>
+
+  <rect x="332" y="228" width="300" height="80" rx="12" fill="#334155"/>
+  <text x="482" y="262" text-anchor="middle" font-size="19" font-weight="bold" fill="white">更新される状態を</text>
+  <text x="482" y="290" text-anchor="middle" font-size="19" font-weight="bold" fill="white">読み書きする？</text>
+
+  <!-- 枝 -->
+  <path d="M634 70 C670 70 670 40 712 40" stroke="#93c5fd" stroke-width="3" fill="none"/>
+  <polygon points="724,40 710,31 710,49" fill="#93c5fd"/>
+  <path d="M634 96 C670 96 670 126 712 126" stroke="#93c5fd" stroke-width="3" fill="none"/>
+  <polygon points="724,126 710,117 710,135" fill="#93c5fd"/>
+  <path d="M634 256 C670 256 670 226 712 226" stroke="#93c5fd" stroke-width="3" fill="none"/>
+  <polygon points="724,226 710,217 710,235" fill="#93c5fd"/>
+  <path d="M634 282 C670 282 670 312 712 312" stroke="#93c5fd" stroke-width="3" fill="none"/>
+  <polygon points="724,312 710,303 710,321" fill="#93c5fd"/>
+
+  <!-- 結果 -->
+  <rect x="726" y="4" width="434" height="74" rx="12" fill="#0f766e"/>
+  <text x="742" y="35" font-size="21" font-weight="bold" fill="white">keyword-app（8001）</text>
+  <text x="742" y="64" font-size="16" fill="#ccfbf1">同じ語で聞かれる：用語、手順、持ち物</text>
+
+  <rect x="726" y="90" width="434" height="74" rx="12" fill="#1e40af"/>
+  <text x="742" y="121" font-size="21" font-weight="bold" fill="white">vector-app（8002）</text>
+  <text x="742" y="150" font-size="16" fill="#dbeafe">言い換えが多い：相談、感想、症状。Embeddingの料金</text>
+
+  <rect x="726" y="190" width="434" height="74" rx="12" fill="#6d28d9"/>
+  <text x="742" y="221" font-size="21" font-weight="bold" fill="white">progress-app（8003）</text>
+  <text x="742" y="250" font-size="16" fill="#ede9fe">する：予定、在庫、進捗、記録</text>
+
+  <rect x="726" y="276" width="434" height="74" rx="12" fill="#b45309"/>
+  <text x="742" y="307" font-size="21" font-weight="bold" fill="white">chat-app（8000）</text>
+  <text x="742" y="336" font-size="16" fill="#fef3c7">しない：役割と口調を決めた相談相手</text>
+</svg>

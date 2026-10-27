@@ -1,0 +1,55 @@
+<svg xmlns="http://www.w3.org/2000/svg"
+     width="1160" height="320" viewBox="0 0 1160 320"
+     font-family="'Noto Sans CJK JP', 'Noto Sans JP', sans-serif">
+
+  <!-- 回答 -->
+  <rect x="0" y="10" width="370" height="300" rx="14" fill="#1e293b" stroke="#64748b" stroke-width="2"/>
+  <text x="20" y="46" font-size="20" font-weight="bold" fill="#93c5fd">回答（モデルが生成）</text>
+  <text x="20" y="98" font-size="19" fill="white">未完了の作業は3件です。</text>
+  <text x="20" y="140" font-size="18" fill="white">4　Janomeでキーワード検索を作る</text>
+  <text x="20" y="176" font-size="18" fill="white">5　回答に資料IDを付ける</text>
+  <text x="20" y="212" font-size="18" fill="white">6　GitHubにコミットして</text>
+  <text x="20" y="240" font-size="18" fill="white">　　URLを提出する</text>
+  <text x="20" y="292" font-size="15" fill="#94a3b8">説明用の回答例</text>
+
+  <!-- 照合の3点 -->
+  <rect x="410" y="40" width="340" height="60" rx="10" fill="#1e40af"/>
+  <text x="580" y="78" text-anchor="middle" font-size="19" fill="white">① 件数は表の行数と同じか</text>
+  <rect x="410" y="130" width="340" height="60" rx="10" fill="#1e40af"/>
+  <text x="580" y="168" text-anchor="middle" font-size="19" fill="white">② id とやることは一字ずつ同じか</text>
+  <rect x="410" y="220" width="340" height="60" rx="10" fill="#1e40af"/>
+  <text x="580" y="258" text-anchor="middle" font-size="19" fill="white">③ 表にないことを足していないか</text>
+
+  <g stroke="#93c5fd" stroke-width="3" fill="none">
+    <path d="M372 70 H408"/>
+    <path d="M372 160 H408"/>
+    <path d="M372 250 H408"/>
+    <path d="M752 70 H788"/>
+    <path d="M752 160 H788"/>
+    <path d="M752 250 H788"/>
+  </g>
+
+  <!-- DBの結果 -->
+  <rect x="790" y="10" width="370" height="300" rx="14" fill="#1e293b" stroke="#0f766e" stroke-width="3"/>
+  <text x="810" y="46" font-size="19" font-weight="bold" fill="#5eead4">LLMが呼んだ関数とDBの結果</text>
+  <text x="810" y="82" font-size="15" fill="#fcd34d">get_tasks({"status": "todo"})</text>
+  <g font-size="15" fill="#94a3b8">
+    <text x="810" y="118">id</text>
+    <text x="846" y="118">やること</text>
+    <text x="1144" y="118" text-anchor="end">完了</text>
+  </g>
+  <path d="M808 128 H1144" stroke="#475569" stroke-width="1"/>
+  <g font-size="15" fill="white">
+    <text x="810" y="156">4</text>
+    <text x="846" y="156">Janomeでキーワード検索を作る</text>
+    <text x="1144" y="156" text-anchor="end">未完了</text>
+    <text x="810" y="190">5</text>
+    <text x="846" y="190">回答に資料IDを付ける</text>
+    <text x="1144" y="190" text-anchor="end">未完了</text>
+    <text x="810" y="224">6</text>
+    <text x="846" y="224">GitHubにコミットして</text>
+    <text x="846" y="246">URLを提出する</text>
+    <text x="1144" y="224" text-anchor="end">未完了</text>
+  </g>
+  <text x="810" y="292" font-size="15" fill="#94a3b8">表は static/app.js の showToolResults()</text>
+</svg>

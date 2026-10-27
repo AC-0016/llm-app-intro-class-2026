@@ -1,0 +1,60 @@
+<svg xmlns="http://www.w3.org/2000/svg"
+     width="1160" height="330" viewBox="0 0 1160 330"
+     font-family="'Noto Sans CJK JP', 'Noto Sans JP', sans-serif">
+
+  <!-- 登録時 -->
+  <text x="0" y="22" font-size="19" font-weight="bold" fill="#fcd34d">資料の登録時</text>
+  <text x="150" y="22" font-size="17" fill="#cbd5e1">python init_db.py（最初と、資料を直したときだけ）</text>
+
+  <rect x="0" y="36" width="250" height="96" rx="12" fill="#0f766e"/>
+  <text x="125" y="76" text-anchor="middle" font-size="20" font-weight="bold" fill="white">data/session01.md</text>
+  <text x="125" y="108" text-anchor="middle" font-size="17" fill="#ccfbf1">36枚のスライド</text>
+
+  <path d="M256 84 H290" stroke="#93c5fd" stroke-width="4" fill="none"/>
+  <polygon points="304,84 288,74 288,94" fill="#93c5fd"/>
+
+  <rect x="308" y="36" width="300" height="96" rx="12" fill="#6d28d9"/>
+  <text x="458" y="76" text-anchor="middle" font-size="20" font-weight="bold" fill="white">Embedding API</text>
+  <text x="458" y="108" text-anchor="middle" font-size="17" fill="#ede9fe">36件をまとめて1回</text>
+
+  <path d="M614 84 H648" stroke="#93c5fd" stroke-width="4" fill="none"/>
+  <polygon points="662,84 646,74 646,94" fill="#93c5fd"/>
+
+  <rect x="666" y="36" width="340" height="96" rx="12" fill="#1e40af"/>
+  <text x="836" y="76" text-anchor="middle" font-size="20" font-weight="bold" fill="white">documents.db</text>
+  <text x="836" y="108" text-anchor="middle" font-size="17" fill="#dbeafe">本文・vector・モデル名を36行</text>
+
+  <!-- 起動時に読み込む -->
+  <path d="M836 134 V196" stroke="#94a3b8" stroke-width="3" fill="none" stroke-dasharray="7 5"/>
+  <polygon points="836,210 826,194 846,194" fill="#94a3b8"/>
+  <text x="852" y="170" font-size="16" fill="#cbd5e1">サーバーの起動時に読み込む</text>
+  <text x="852" y="192" font-size="16" fill="#cbd5e1">（APIは呼ばない）</text>
+
+  <!-- 質問時 -->
+  <text x="0" y="168" font-size="19" font-weight="bold" fill="#fcd34d">質問のたび</text>
+  <text x="112" y="168" font-size="17" fill="#cbd5e1">main.py の ask()</text>
+
+  <rect x="0" y="214" width="130" height="96" rx="12" fill="#b45309"/>
+  <text x="65" y="270" text-anchor="middle" font-size="21" font-weight="bold" fill="white">質問</text>
+
+  <path d="M136 262 H160" stroke="#93c5fd" stroke-width="4" fill="none"/>
+  <polygon points="174,262 158,252 158,272" fill="#93c5fd"/>
+
+  <rect x="178" y="214" width="250" height="96" rx="12" fill="#6d28d9"/>
+  <text x="303" y="254" text-anchor="middle" font-size="20" font-weight="bold" fill="white">Embedding API</text>
+  <text x="303" y="286" text-anchor="middle" font-size="17" fill="#ede9fe">質問の1件だけ</text>
+
+  <path d="M434 262 H458" stroke="#93c5fd" stroke-width="4" fill="none"/>
+  <polygon points="472,262 456,252 456,272" fill="#93c5fd"/>
+
+  <rect x="476" y="214" width="380" height="96" rx="12" fill="#334155" stroke="#94a3b8" stroke-width="2"/>
+  <text x="666" y="254" text-anchor="middle" font-size="20" font-weight="bold" fill="white">類似度を計算して選ぶ</text>
+  <text x="666" y="286" text-anchor="middle" font-size="17" fill="#e2e8f0">36件のvectorと比べる（Python）</text>
+
+  <path d="M862 262 H886" stroke="#93c5fd" stroke-width="4" fill="none"/>
+  <polygon points="900,262 884,252 884,272" fill="#93c5fd"/>
+
+  <rect x="904" y="214" width="256" height="96" rx="12" fill="#475569"/>
+  <text x="1032" y="254" text-anchor="middle" font-size="20" font-weight="bold" fill="white">回答のAPI</text>
+  <text x="1032" y="286" text-anchor="middle" font-size="17" fill="#e2e8f0">上位の本文と質問を送る</text>
+</svg>
