@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg"
+     width="1160" height="230" viewBox="0 0 1160 230"
+     font-family="'Noto Sans CJK JP', 'Noto Sans JP', sans-serif">
+
+  <!-- 原本 -->
+  <rect x="0" y="20" width="290" height="130" rx="14" fill="#0f766e"/>
+  <text x="145" y="60" text-anchor="middle" font-size="25" font-weight="bold" fill="white">原本</text>
+  <text x="145" y="95" text-anchor="middle" font-size="20" fill="white">data/session01.md</text>
+  <text x="145" y="126" text-anchor="middle" font-size="18" fill="#ccfbf1">人が編集するMarkdown</text>
+
+  <text x="362" y="52" text-anchor="middle" font-size="17" fill="#cbd5e1">python</text>
+  <text x="362" y="74" text-anchor="middle" font-size="17" fill="#cbd5e1">init_db.py</text>
+  <path d="M300 85 H411" stroke="#93c5fd" stroke-width="4" fill="none"/>
+  <polygon points="425,85 409,75 409,95" fill="#93c5fd"/>
+
+  <!-- DB -->
+  <rect x="435" y="20" width="290" height="130" rx="14" fill="#1e40af"/>
+  <text x="580" y="60" text-anchor="middle" font-size="25" font-weight="bold" fill="white">DB</text>
+  <text x="580" y="95" text-anchor="middle" font-size="20" fill="white">documents.db（36行）</text>
+  <text x="580" y="126" text-anchor="middle" font-size="18" fill="#dbeafe">サーバーが起動時に読み込む</text>
+
+  <text x="797" y="52" text-anchor="middle" font-size="17" fill="#cbd5e1">質問のたびに</text>
+  <text x="797" y="74" text-anchor="middle" font-size="17" fill="#cbd5e1">build_context()</text>
+  <path d="M735 85 H846" stroke="#93c5fd" stroke-width="4" fill="none"/>
+  <polygon points="860,85 844,75 844,95" fill="#93c5fd"/>
+
+  <!-- 入力 -->
+  <rect x="870" y="20" width="290" height="130" rx="14" fill="#b45309"/>
+  <text x="1015" y="60" text-anchor="middle" font-size="25" font-weight="bold" fill="white">入力</text>
+  <text x="1015" y="95" text-anchor="middle" font-size="20" fill="white">context 文字列</text>
+  <text x="1015" y="126" text-anchor="middle" font-size="18" fill="#fef3c7">選ばれた資料だけ。input へ</text>
+
+  <!-- 変わるとき -->
+  <text x="145" y="184" text-anchor="middle" font-size="16" fill="#94a3b8">変わるとき</text>
+  <text x="145" y="212" text-anchor="middle" font-size="20" fill="#fcd34d">人が直したとき</text>
+  <text x="580" y="184" text-anchor="middle" font-size="16" fill="#94a3b8">変わるとき</text>
+  <text x="580" y="212" text-anchor="middle" font-size="20" fill="#fcd34d">init_db.py を実行したとき</text>
+  <text x="1015" y="184" text-anchor="middle" font-size="16" fill="#94a3b8">変わるとき</text>
+  <text x="1015" y="212" text-anchor="middle" font-size="20" fill="#fcd34d">質問を処理するたび</text>
+</svg>

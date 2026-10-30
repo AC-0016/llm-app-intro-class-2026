@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg"
+     width="1160" height="300" viewBox="0 0 1160 300"
+     font-family="'Noto Sans CJK JP', 'Noto Sans JP', sans-serif">
+
+  <text x="0" y="22" font-size="17" fill="#94a3b8">「学習と推論の違いは？」で一致した6件を、点数の大きい順に並べたところ（sort の後）</text>
+
+  <rect x="0" y="36" width="180" height="104" rx="12" fill="#1e40af"/>
+  <text x="90" y="70" text-anchor="middle" font-size="22" font-weight="bold" fill="white">資料12</text>
+  <text x="90" y="98" text-anchor="middle" font-size="16" fill="#cbd5e1">学習と推論</text>
+  <text x="90" y="128" text-anchor="middle" font-size="20" font-weight="bold" fill="#fcd34d">2点</text>
+  <rect x="196" y="36" width="180" height="104" rx="12" fill="#334155"/>
+  <text x="286" y="70" text-anchor="middle" font-size="22" font-weight="bold" fill="white">資料2</text>
+  <text x="286" y="98" text-anchor="middle" font-size="16" fill="#cbd5e1">今日のゴール</text>
+  <text x="286" y="128" text-anchor="middle" font-size="20" font-weight="bold" fill="#fcd34d">1点</text>
+  <rect x="392" y="36" width="180" height="104" rx="12" fill="#334155"/>
+  <text x="482" y="70" text-anchor="middle" font-size="22" font-weight="bold" fill="white">資料7</text>
+  <text x="482" y="98" text-anchor="middle" font-size="16" fill="#cbd5e1">LLMとは</text>
+  <text x="482" y="128" text-anchor="middle" font-size="20" font-weight="bold" fill="#fcd34d">1点</text>
+  <rect x="588" y="36" width="180" height="104" rx="12" fill="#334155"/>
+  <text x="678" y="70" text-anchor="middle" font-size="22" font-weight="bold" fill="white">資料8</text>
+  <text x="678" y="98" text-anchor="middle" font-size="14" fill="#cbd5e1">言語モデルの簡単な歴史</text>
+  <text x="678" y="128" text-anchor="middle" font-size="20" font-weight="bold" fill="#fcd34d">1点</text>
+  <rect x="784" y="36" width="180" height="104" rx="12" fill="#334155"/>
+  <text x="874" y="70" text-anchor="middle" font-size="22" font-weight="bold" fill="white">資料9</text>
+  <text x="874" y="98" text-anchor="middle" font-size="14" fill="#cbd5e1">Transformerの考え方</text>
+  <text x="874" y="128" text-anchor="middle" font-size="20" font-weight="bold" fill="#fcd34d">1点</text>
+  <rect x="980" y="36" width="180" height="104" rx="12" fill="#334155"/>
+  <text x="1070" y="70" text-anchor="middle" font-size="22" font-weight="bold" fill="white">資料35</text>
+  <text x="1070" y="98" text-anchor="middle" font-size="16" fill="#cbd5e1">確認問題</text>
+  <text x="1070" y="128" text-anchor="middle" font-size="20" font-weight="bold" fill="#fcd34d">1点</text>
+
+  <path d="M0 160 V172 H180 V160" stroke="#5eead4" stroke-width="3" fill="none"/>
+  <text x="194" y="178" font-size="19" font-weight="bold" fill="#5eead4">TOP_K = 1</text>
+  <path d="M0 200 V212 H572 V200" stroke="#5eead4" stroke-width="3" fill="none"/>
+  <text x="586" y="218" font-size="19" font-weight="bold" fill="#5eead4">TOP_K = 3</text>
+  <path d="M0 240 V252 H964 V240" stroke="#5eead4" stroke-width="3" fill="none"/>
+  <text x="978" y="258" font-size="19" font-weight="bold" fill="#5eead4">TOP_K = 5</text>
+  <text x="0" y="292" font-size="17" fill="#cbd5e1">1点の5件は、元の順番（ID順：2、7、8、9、35）のまま。並んだ順は「答えに必要な順」ではない。</text>
+</svg>

@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg"
+     width="1160" height="250" viewBox="0 0 1160 250"
+     font-family="'Noto Sans CJK JP', 'Noto Sans JP', sans-serif">
+
+  <!-- 時間の線 -->
+  <path d="M20 110 H1120" stroke="#64748b" stroke-width="4" fill="none"/>
+  <polygon points="1140,110 1118,98 1118,122" fill="#64748b"/>
+  <text x="1140" y="150" text-anchor="end" font-size="17" fill="#94a3b8">時間</text>
+
+  <!-- 回 -->
+  <text x="110" y="45" text-anchor="middle" font-size="22" font-weight="bold" fill="#93c5fd">第9回</text>
+  <text x="310" y="45" text-anchor="middle" font-size="22" font-weight="bold" fill="#93c5fd">第10回</text>
+  <text x="510" y="45" text-anchor="middle" font-size="22" font-weight="bold" fill="#93c5fd">第11回</text>
+  <text x="710" y="45" text-anchor="middle" font-size="22" font-weight="bold" fill="#93c5fd">第12回</text>
+  <text x="910" y="45" text-anchor="middle" font-size="22" font-weight="bold" fill="#93c5fd">第13回</text>
+
+  <!-- コミット（プッシュ済み） -->
+  <circle cx="110" cy="110" r="15" fill="#0f766e" stroke="#5eead4" stroke-width="3"/>
+  <circle cx="310" cy="110" r="15" fill="#0f766e" stroke="#5eead4" stroke-width="3"/>
+  <circle cx="510" cy="110" r="15" fill="#0f766e" stroke="#5eead4" stroke-width="3"/>
+  <circle cx="710" cy="110" r="15" fill="#0f766e" stroke="#5eead4" stroke-width="3"/>
+  <circle cx="900" cy="110" r="15" fill="#0f766e" stroke="#5eead4" stroke-width="3"/>
+  <!-- 評価の対象 -->
+  <circle cx="900" cy="110" r="26" fill="none" stroke="#fcd34d" stroke-width="4"/>
+
+  <text x="110" y="155" text-anchor="middle" font-size="17" fill="#e2e8f0">READMEの雛形</text>
+  <text x="310" y="155" text-anchor="middle" font-size="17" fill="#e2e8f0">レベル1で動く</text>
+  <text x="510" y="155" text-anchor="middle" font-size="17" fill="#e2e8f0">レベル2の1つ目</text>
+  <text x="710" y="155" text-anchor="middle" font-size="17" fill="#e2e8f0">評価を記録</text>
+  <text x="900" y="155" text-anchor="middle" font-size="17" fill="#e2e8f0">READMEを仕上げる</text>
+
+  <!-- 最終課題提出フォーム -->
+  <path d="M1020 60 V170" stroke="#f87171" stroke-width="3" stroke-dasharray="8 6" fill="none"/>
+  <text x="1020" y="45" text-anchor="middle" font-size="18" font-weight="bold" fill="#fca5a5">提出フォーム</text>
+
+  <!-- 説明 -->
+  <rect x="560" y="190" width="580" height="50" rx="10" fill="#422006"/>
+  <text x="850" y="222" text-anchor="middle" font-size="19" fill="#fde68a">評価の対象：提出時間に最も近いコミット</text>
+  <rect x="20" y="190" width="510" height="50" rx="10" fill="#134e4a"/>
+  <circle cx="50" cy="215" r="10" fill="#0f766e" stroke="#5eead4" stroke-width="3"/>
+  <text x="72" y="222" font-size="19" fill="#ccfbf1">= コミットしてプッシュした状態</text>
+</svg>

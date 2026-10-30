@@ -1,0 +1,64 @@
+<svg xmlns="http://www.w3.org/2000/svg"
+     width="1160" height="290" viewBox="0 0 1160 290"
+     font-family="'Noto Sans CJK JP', 'Noto Sans JP', sans-serif">
+
+  <!-- 質問 -->
+  <rect x="0" y="40" width="100" height="110" rx="12" fill="#b45309"/>
+  <text x="50" y="103" text-anchor="middle" font-size="22" font-weight="bold" fill="white">質問</text>
+
+  <path d="M102 95 H126" stroke="#93c5fd" stroke-width="4" fill="none"/>
+  <polygon points="138,95 124,86 124,104" fill="#93c5fd"/>
+
+  <!-- ① extract_words -->
+  <rect x="142" y="22" width="236" height="146" rx="12" fill="#1e40af" stroke="#f59e0b" stroke-width="4"/>
+  <rect x="312" y="32" width="56" height="26" rx="6" fill="#b45309"/>
+  <text x="340" y="51" text-anchor="middle" font-size="15" font-weight="bold" fill="white">今日</text>
+  <text x="156" y="84" font-size="19" font-weight="bold" fill="white">① extract_words()</text>
+  <text x="156" y="118" font-size="18" fill="#dbeafe">検索語を取り出す</text>
+  <text x="156" y="152" font-size="16" fill="#bfdbfe">main.py 79〜81行</text>
+
+  <path d="M382 95 H406" stroke="#93c5fd" stroke-width="4" fill="none"/>
+  <polygon points="418,95 404,86 404,104" fill="#93c5fd"/>
+
+  <!-- ② search_documents -->
+  <rect x="422" y="22" width="236" height="146" rx="12" fill="#1e40af" stroke="#f59e0b" stroke-width="4"/>
+  <rect x="592" y="32" width="56" height="26" rx="6" fill="#b45309"/>
+  <text x="620" y="51" text-anchor="middle" font-size="15" font-weight="bold" fill="white">今日</text>
+  <text x="436" y="84" font-size="19" font-weight="bold" fill="white">② search_documents()</text>
+  <text x="436" y="118" font-size="18" fill="#dbeafe">最大3件（TOP_K）を選ぶ</text>
+  <text x="436" y="152" font-size="16" fill="#bfdbfe">main.py 84行</text>
+
+  <path d="M662 95 H686" stroke="#93c5fd" stroke-width="4" fill="none"/>
+  <polygon points="698,95 684,86 684,104" fill="#93c5fd"/>
+
+  <!-- ③ ask_with_documents -->
+  <rect x="700" y="20" width="310" height="150" rx="12" fill="#334155"/>
+  <rect x="946" y="30" width="54" height="26" rx="6" fill="#475569"/>
+  <text x="973" y="49" text-anchor="middle" font-size="15" fill="#e2e8f0">前回</text>
+  <text x="716" y="84" font-size="19" font-weight="bold" fill="white">③ ask_with_documents()</text>
+  <text x="716" y="118" font-size="18" fill="#e2e8f0">資料と質問をLLMへ送る</text>
+  <text x="716" y="152" font-size="16" fill="#94a3b8">main.py 96行（llm.py）</text>
+
+  <path d="M1012 95 H1034" stroke="#93c5fd" stroke-width="4" fill="none"/>
+  <polygon points="1046,95 1032,86 1032,104" fill="#93c5fd"/>
+
+  <!-- 回答 -->
+  <rect x="1048" y="40" width="112" height="110" rx="12" fill="#475569"/>
+  <text x="1104" y="103" text-anchor="middle" font-size="22" font-weight="bold" fill="white">回答</text>
+
+  <!-- 検索語が0個のとき -->
+  <path d="M260 172 V196" stroke="#94a3b8" stroke-width="3" fill="none" stroke-dasharray="7 5"/>
+  <polygon points="260,210 251,196 269,196" fill="#94a3b8"/>
+  <text x="276" y="196" font-size="17" fill="#fcd34d">検索語が0個</text>
+  <rect x="142" y="212" width="258" height="72" rx="12" fill="none" stroke="#64748b" stroke-width="2"/>
+  <text x="158" y="244" font-size="18" fill="#e2e8f0">400エラーを返す</text>
+  <text x="158" y="272" font-size="16" fill="#94a3b8">main.py 80〜81行</text>
+
+  <!-- 0件のとき -->
+  <path d="M540 172 V250 H686" stroke="#94a3b8" stroke-width="3" fill="none" stroke-dasharray="7 5"/>
+  <polygon points="700,250 686,241 686,259" fill="#94a3b8"/>
+  <text x="553" y="222" font-size="17" fill="#fcd34d">資料が0件</text>
+  <rect x="702" y="208" width="458" height="76" rx="12" fill="none" stroke="#64748b" stroke-width="2"/>
+  <text x="720" y="240" font-size="18" fill="#e2e8f0">APIを呼ばずに定型文を返す</text>
+  <text x="720" y="268" font-size="16" fill="#94a3b8">料金もかからない（main.py 87〜93行）</text>
+</svg>

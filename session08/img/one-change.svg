@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg"
+     width="1160" height="250" viewBox="0 0 1160 250"
+     font-family="'Noto Sans CJK JP', 'Noto Sans JP', sans-serif">
+
+  <!-- 前 -->
+  <rect x="0" y="0" width="420" height="200" rx="14" fill="#1e293b" stroke="#64748b" stroke-width="2"/>
+  <text x="20" y="36" font-size="22" font-weight="bold" fill="#93c5fd">前</text>
+  <text x="20" y="72" font-size="19" fill="white">TOP_K <tspan font-weight="bold" fill="#fcd34d">3</tspan>・INSTRUCTIONS 版1・資料は同じ</text>
+  <text x="20" y="110" font-size="19" fill="#cbd5e1">同じ質問を送る</text>
+  <text x="20" y="146" font-size="18" fill="#cbd5e1">→ 根拠の取得・3項目の点数・</text>
+  <text x="20" y="174" font-size="18" fill="#cbd5e1">　 入力トークン数を記録</text>
+
+  <!-- 変える -->
+  <text x="580" y="58" text-anchor="middle" font-size="20" font-weight="bold" fill="#fcd34d">1か所だけ変える</text>
+  <text x="580" y="88" text-anchor="middle" font-size="18" fill="white">TOP_K 3 → 5</text>
+  <path d="M432 110 H714" stroke="#93c5fd" stroke-width="4" fill="none"/>
+  <polygon points="728,110 712,100 712,120" fill="#93c5fd"/>
+  <text x="580" y="144" text-anchor="middle" font-size="16" fill="#94a3b8">再起動してから</text>
+
+  <!-- 後 -->
+  <rect x="740" y="0" width="420" height="200" rx="14" fill="#1e293b" stroke="#b45309" stroke-width="3"/>
+  <text x="760" y="36" font-size="22" font-weight="bold" fill="#fdba74">後</text>
+  <text x="760" y="72" font-size="19" fill="white">TOP_K <tspan font-weight="bold" fill="#fcd34d">5</tspan>・INSTRUCTIONS 版1・資料は同じ</text>
+  <text x="760" y="110" font-size="19" fill="#cbd5e1">同じ質問を送る</text>
+  <text x="760" y="146" font-size="18" fill="#cbd5e1">→ 同じ3つを記録して、</text>
+  <text x="760" y="174" font-size="18" fill="#cbd5e1">　 前と見比べる</text>
+
+  <text x="580" y="238" text-anchor="middle" font-size="19" fill="#fca5a5">2か所を同時に変えると、どちらが効いたか分からない</text>
+</svg>

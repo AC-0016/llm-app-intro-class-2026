@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg"
+     width="1160" height="320" viewBox="0 0 1160 320"
+     font-family="'Noto Sans CJK JP', 'Noto Sans JP', sans-serif">
+
+  <!-- 回答 -->
+  <rect x="0" y="10" width="340" height="300" rx="14" fill="#1e293b" stroke="#64748b" stroke-width="2"/>
+  <text x="20" y="46" font-size="20" font-weight="bold" fill="#93c5fd">回答（モデルが生成）</text>
+  <text x="20" y="130" font-size="22" fill="white">もっともらしい誤答の</text>
+  <text x="20" y="164" font-size="22" fill="white">ことです。</text>
+  <rect x="16" y="180" width="112" height="36" rx="6" fill="#b45309"/>
+  <text x="72" y="206" text-anchor="middle" font-size="22" font-weight="bold" fill="white">[資料19]</text>
+
+  <!-- 照合の3点 -->
+  <rect x="380" y="40" width="400" height="60" rx="10" fill="#1e40af"/>
+  <text x="580" y="78" text-anchor="middle" font-size="20" fill="white">① 渡した資料に ID 19 があるか</text>
+  <rect x="380" y="130" width="400" height="60" rx="10" fill="#1e40af"/>
+  <text x="580" y="168" text-anchor="middle" font-size="20" fill="white">② その本文が主張を支えるか</text>
+  <rect x="380" y="220" width="400" height="60" rx="10" fill="#1e40af"/>
+  <text x="580" y="258" text-anchor="middle" font-size="20" fill="white">③ 本文にないことを足していないか</text>
+
+  <g stroke="#93c5fd" stroke-width="3" fill="none">
+    <path d="M342 70 H378"/>
+    <path d="M342 160 H378"/>
+    <path d="M342 250 H378"/>
+    <path d="M782 70 H818"/>
+    <path d="M782 160 H818"/>
+    <path d="M782 250 H818"/>
+  </g>
+
+  <!-- LLMに渡した資料 -->
+  <rect x="820" y="10" width="340" height="300" rx="14" fill="#1e293b" stroke="#0f766e" stroke-width="3"/>
+  <text x="840" y="46" font-size="20" font-weight="bold" fill="#5eead4">LLMに渡した資料</text>
+  <text x="840" y="84" font-size="18" font-weight="bold" fill="white">[資料19] 第1回… /</text>
+  <text x="840" y="110" font-size="18" fill="white">得意なことと、確認が必要なこと</text>
+  <text x="840" y="146" font-size="17" fill="#94a3b8">（表は省略）</text>
+  <text x="840" y="182" font-size="18" fill="white">もっともらしい誤答を、</text>
+  <text x="840" y="208" font-size="18" fill="white">ハルシネーションと呼ぶ</text>
+  <text x="840" y="234" font-size="18" fill="white">ことがあります。</text>
+  <text x="840" y="290" font-size="15" fill="#94a3b8">原本: data/session01.md の19枚目</text>
+</svg>

@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg"
+     width="1160" height="300" viewBox="0 0 1160 300"
+     font-family="'Noto Sans CJK JP', 'Noto Sans JP', sans-serif">
+
+  <!-- 反対にする -->
+  <rect x="0" y="20" width="260" height="100" rx="12" fill="#334155"/>
+  <text x="130" y="62" text-anchor="middle" font-size="21" font-weight="bold" fill="white">反対にする</text>
+  <text x="130" y="94" text-anchor="middle" font-size="17" fill="#cbd5e1">（切り替え）</text>
+
+  <rect x="300" y="30" width="170" height="80" rx="12" fill="#475569"/>
+  <text x="385" y="78" text-anchor="middle" font-size="22" font-weight="bold" fill="white">未完了</text>
+
+  <text x="545" y="56" text-anchor="middle" font-size="16" fill="#e2e8f0">1回目：反対に</text>
+  <path d="M472 70 H604" stroke="#93c5fd" stroke-width="3" fill="none"/>
+  <polygon points="618,70 602,61 602,79" fill="#93c5fd"/>
+
+  <rect x="620" y="30" width="170" height="80" rx="12" fill="#166534"/>
+  <text x="705" y="78" text-anchor="middle" font-size="22" font-weight="bold" fill="white">完了</text>
+
+  <text x="865" y="56" text-anchor="middle" font-size="16" fill="#e2e8f0">2回目：反対に</text>
+  <path d="M792 70 H924" stroke="#93c5fd" stroke-width="3" fill="none"/>
+  <polygon points="938,70 922,61 922,79" fill="#93c5fd"/>
+
+  <rect x="940" y="30" width="200" height="80" rx="12" fill="#7f1d1d" stroke="#f87171" stroke-width="3"/>
+  <text x="1040" y="66" text-anchor="middle" font-size="22" font-weight="bold" fill="white">未完了</text>
+  <text x="1040" y="94" text-anchor="middle" font-size="16" fill="#fecaca">元に戻ってしまう</text>
+
+  <!-- 指定した値にする -->
+  <rect x="0" y="180" width="260" height="100" rx="12" fill="#1e40af" stroke="#f59e0b" stroke-width="3"/>
+  <text x="130" y="222" text-anchor="middle" font-size="21" font-weight="bold" fill="white">指定した値にする</text>
+  <text x="130" y="254" text-anchor="middle" font-size="17" fill="#dbeafe">（今回の set_task_done）</text>
+
+  <rect x="300" y="190" width="170" height="80" rx="12" fill="#475569"/>
+  <text x="385" y="238" text-anchor="middle" font-size="22" font-weight="bold" fill="white">未完了</text>
+
+  <text x="545" y="216" text-anchor="middle" font-size="16" fill="#fcd34d">1回目：done=true</text>
+  <path d="M472 230 H604" stroke="#93c5fd" stroke-width="3" fill="none"/>
+  <polygon points="618,230 602,221 602,239" fill="#93c5fd"/>
+
+  <rect x="620" y="190" width="170" height="80" rx="12" fill="#166534"/>
+  <text x="705" y="238" text-anchor="middle" font-size="22" font-weight="bold" fill="white">完了</text>
+
+  <text x="865" y="216" text-anchor="middle" font-size="16" fill="#fcd34d">2回目：done=true</text>
+  <path d="M792 230 H924" stroke="#93c5fd" stroke-width="3" fill="none"/>
+  <polygon points="938,230 922,221 922,239" fill="#93c5fd"/>
+
+  <rect x="940" y="190" width="200" height="80" rx="12" fill="#166534" stroke="#4ade80" stroke-width="3"/>
+  <text x="1040" y="226" text-anchor="middle" font-size="22" font-weight="bold" fill="white">完了</text>
+  <text x="1040" y="254" text-anchor="middle" font-size="16" fill="#bbf7d0">完了のまま</text>
+</svg>

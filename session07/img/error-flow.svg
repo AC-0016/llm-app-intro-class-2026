@@ -1,0 +1,59 @@
+<svg xmlns="http://www.w3.org/2000/svg"
+     width="1160" height="250" viewBox="0 0 1160 250"
+     font-family="'Noto Sans CJK JP', 'Noto Sans JP', sans-serif">
+
+  <!-- ① progress_db.py -->
+  <rect x="0" y="10" width="200" height="170" rx="12" fill="#7f1d1d" stroke="#f87171" stroke-width="3"/>
+  <text x="16" y="44" font-size="18" font-weight="bold" fill="white">set_task_done()</text>
+  <text x="16" y="78" font-size="16" fill="#fecaca">raise ValueError(</text>
+  <text x="16" y="102" font-size="16" fill="#fecaca">'id 99 の…')</text>
+  <text x="16" y="142" font-size="15" fill="#fca5a5">progress_db.py</text>
+  <text x="16" y="164" font-size="15" fill="#fca5a5">109〜111行</text>
+
+  <path d="M202 95 H224" stroke="#93c5fd" stroke-width="4" fill="none"/>
+  <polygon points="238,95 224,86 224,104" fill="#93c5fd"/>
+
+  <!-- ② run_tool -->
+  <rect x="240" y="10" width="200" height="170" rx="12" fill="#334155"/>
+  <text x="256" y="44" font-size="18" font-weight="bold" fill="white">run_tool()</text>
+  <text x="256" y="78" font-size="16" fill="#e2e8f0">受け止めずに</text>
+  <text x="256" y="102" font-size="16" fill="#e2e8f0">そのまま上へ</text>
+  <text x="256" y="142" font-size="15" fill="#94a3b8">llm.py</text>
+  <text x="256" y="164" font-size="15" fill="#94a3b8">95行</text>
+
+  <path d="M442 95 H464" stroke="#93c5fd" stroke-width="4" fill="none"/>
+  <polygon points="478,95 464,86 464,104" fill="#93c5fd"/>
+
+  <!-- ③ ask_with_tools -->
+  <rect x="480" y="10" width="200" height="170" rx="12" fill="#334155"/>
+  <text x="496" y="44" font-size="18" font-weight="bold" fill="white">ask_with_tools()</text>
+  <text x="496" y="78" font-size="16" fill="#e2e8f0">ここもそのまま上へ</text>
+  <text x="496" y="102" font-size="16" fill="#e2e8f0">2回目は呼ばない</text>
+  <text x="496" y="142" font-size="15" fill="#94a3b8">llm.py</text>
+  <text x="496" y="164" font-size="15" fill="#94a3b8">136行</text>
+
+  <path d="M682 95 H704" stroke="#93c5fd" stroke-width="4" fill="none"/>
+  <polygon points="718,95 704,86 704,104" fill="#93c5fd"/>
+
+  <!-- ④ main.py -->
+  <rect x="720" y="10" width="200" height="170" rx="12" fill="#1e40af" stroke="#f59e0b" stroke-width="3"/>
+  <text x="736" y="44" font-size="18" font-weight="bold" fill="white">main.py ask()</text>
+  <text x="736" y="78" font-size="16" fill="#dbeafe">except ValueError</text>
+  <text x="736" y="102" font-size="16" fill="#dbeafe">→ 400 と、その文</text>
+  <text x="736" y="142" font-size="15" fill="#bfdbfe">main.py</text>
+  <text x="736" y="164" font-size="15" fill="#bfdbfe">49〜50行</text>
+
+  <path d="M922 95 H944" stroke="#93c5fd" stroke-width="4" fill="none"/>
+  <polygon points="958,95 944,86 944,104" fill="#93c5fd"/>
+
+  <!-- ⑤ 画面 -->
+  <rect x="960" y="10" width="200" height="170" rx="12" fill="#475569"/>
+  <text x="976" y="44" font-size="18" font-weight="bold" fill="white">画面のステータス</text>
+  <text x="976" y="78" font-size="16" fill="#fcd34d">id 99 のやることは</text>
+  <text x="976" y="102" font-size="16" fill="#fcd34d">ありません。</text>
+  <text x="976" y="142" font-size="15" fill="#cbd5e1">static/app.js</text>
+  <text x="976" y="164" font-size="15" fill="#cbd5e1">74〜88行</text>
+
+  <!-- 注記 -->
+  <text x="580" y="226" text-anchor="middle" font-size="18" fill="#94a3b8">どの関数で止まっても、同じ道を通って画面に出る（DBは変わらず、2回目のAPI呼び出しもしない）</text>
+</svg>

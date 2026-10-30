@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg"
+     width="1160" height="250" viewBox="0 0 1160 250"
+     font-family="'Noto Sans CJK JP', 'Noto Sans JP', sans-serif">
+
+  <!-- 左：session01.md だけ -->
+  <rect x="0" y="0" width="500" height="210" rx="14" fill="#1e293b" stroke="#64748b" stroke-width="2"/>
+  <text x="20" y="36" font-size="21" font-weight="bold" fill="#93c5fd">data/ が session01.md だけ（36件）</text>
+  <text x="20" y="70" font-size="16" fill="#94a3b8">原本（変わらない）</text>
+  <text x="340" y="70" font-size="16" fill="#94a3b8">資料ID</text>
+  <text x="20" y="106" font-size="20" fill="white">session01.md の 1枚目</text>
+  <text x="340" y="106" font-size="20" font-weight="bold" fill="#fcd34d">資料1</text>
+  <text x="20" y="142" font-size="20" fill="white">session01.md の 18枚目</text>
+  <text x="340" y="142" font-size="20" font-weight="bold" fill="#fcd34d">資料18</text>
+  <text x="20" y="178" font-size="20" fill="white">session01.md の 26枚目</text>
+  <text x="340" y="178" font-size="20" font-weight="bold" fill="#fcd34d">資料26</text>
+
+  <!-- 矢印 -->
+  <text x="580" y="80" text-anchor="middle" font-size="16" fill="#cbd5e1">99-test.md を</text>
+  <text x="580" y="102" text-anchor="middle" font-size="16" fill="#cbd5e1">足して init_db.py</text>
+  <path d="M512 125 H634" stroke="#93c5fd" stroke-width="4" fill="none"/>
+  <polygon points="648,125 632,115 632,135" fill="#93c5fd"/>
+
+  <!-- 右：99-test.md を足す -->
+  <rect x="660" y="0" width="500" height="210" rx="14" fill="#1e293b" stroke="#b45309" stroke-width="3"/>
+  <text x="680" y="36" font-size="21" font-weight="bold" fill="#fdba74">99-test.md を足す（37件）</text>
+  <text x="680" y="70" font-size="16" fill="#94a3b8">原本（変わらない）</text>
+  <text x="1000" y="70" font-size="16" fill="#94a3b8">資料ID</text>
+  <rect x="672" y="84" width="476" height="30" rx="6" fill="#7c2d12"/>
+  <text x="680" y="106" font-size="20" fill="white">99-test.md の 2枚目</text>
+  <text x="1000" y="106" font-size="20" font-weight="bold" fill="#fcd34d">資料1</text>
+  <text x="680" y="142" font-size="20" fill="white">session01.md の 1枚目</text>
+  <text x="1000" y="142" font-size="20" font-weight="bold" fill="#fcd34d">資料2</text>
+  <text x="680" y="178" font-size="20" fill="white">session01.md の 18枚目</text>
+  <text x="1000" y="178" font-size="20" font-weight="bold" fill="#fcd34d">資料19</text>
+  <text x="680" y="200" font-size="15" fill="#94a3b8">（26枚目は資料27。1つずつずれる）</text>
+
+  <text x="580" y="242" text-anchor="middle" font-size="19" fill="#5eead4">ファイル名の順に読み、1から番号を付け直す。スライド番号と見出しは変わらない</text>
+</svg>

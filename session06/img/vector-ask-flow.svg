@@ -1,0 +1,56 @@
+<svg xmlns="http://www.w3.org/2000/svg"
+     width="1160" height="290" viewBox="0 0 1160 290"
+     font-family="'Noto Sans CJK JP', 'Noto Sans JP', sans-serif">
+
+  <!-- 質問 -->
+  <rect x="0" y="40" width="100" height="110" rx="12" fill="#b45309"/>
+  <text x="50" y="103" text-anchor="middle" font-size="22" font-weight="bold" fill="white">質問</text>
+
+  <path d="M102 95 H126" stroke="#93c5fd" stroke-width="4" fill="none"/>
+  <polygon points="138,95 124,86 124,104" fill="#93c5fd"/>
+
+  <!-- ① embed_texts -->
+  <rect x="140" y="22" width="240" height="146" rx="12" fill="#1e40af" stroke="#f59e0b" stroke-width="4"/>
+  <text x="156" y="62" font-size="19" font-weight="bold" fill="white">① embed_texts()</text>
+  <text x="156" y="96" font-size="18" fill="#dbeafe">質問をベクトルにする</text>
+  <text x="156" y="126" font-size="16" fill="#bfdbfe">main.py 92行</text>
+  <rect x="156" y="136" width="150" height="24" rx="6" fill="#6d28d9"/>
+  <text x="231" y="154" text-anchor="middle" font-size="15" fill="white">Embedding API</text>
+
+  <path d="M382 95 H406" stroke="#93c5fd" stroke-width="4" fill="none"/>
+  <polygon points="418,95 404,86 404,104" fill="#93c5fd"/>
+
+  <!-- ② search_documents -->
+  <rect x="420" y="22" width="260" height="146" rx="12" fill="#1e40af" stroke="#f59e0b" stroke-width="4"/>
+  <text x="436" y="62" font-size="19" font-weight="bold" fill="white">② search_documents()</text>
+  <text x="436" y="96" font-size="18" fill="#dbeafe">類似度で資料を選ぶ</text>
+  <text x="436" y="126" font-size="16" fill="#bfdbfe">main.py 95行</text>
+  <rect x="436" y="136" width="96" height="24" rx="6" fill="#475569"/>
+  <text x="484" y="154" text-anchor="middle" font-size="15" fill="white">APIなし</text>
+
+  <path d="M682 95 H706" stroke="#93c5fd" stroke-width="4" fill="none"/>
+  <polygon points="718,95 704,86 704,104" fill="#93c5fd"/>
+
+  <!-- ③ ask_with_documents -->
+  <rect x="722" y="22" width="290" height="146" rx="12" fill="#334155"/>
+  <rect x="926" y="30" width="78" height="26" rx="6" fill="#475569"/>
+  <text x="965" y="49" text-anchor="middle" font-size="14" fill="#e2e8f0">第4回と同じ</text>
+  <text x="738" y="84" font-size="19" font-weight="bold" fill="white">③ ask_with_documents()</text>
+  <text x="738" y="114" font-size="18" fill="#e2e8f0">資料と質問をLLMへ送る</text>
+  <text x="738" y="140" font-size="16" fill="#94a3b8">main.py 106行（回答のAPI）</text>
+
+  <path d="M1014 95 H1036" stroke="#93c5fd" stroke-width="4" fill="none"/>
+  <polygon points="1048,95 1034,86 1034,104" fill="#93c5fd"/>
+
+  <!-- 回答 -->
+  <rect x="1050" y="40" width="110" height="110" rx="12" fill="#475569"/>
+  <text x="1105" y="103" text-anchor="middle" font-size="22" font-weight="bold" fill="white">回答</text>
+
+  <!-- 0件のとき -->
+  <path d="M550 172 V240 H706" stroke="#94a3b8" stroke-width="3" fill="none" stroke-dasharray="7 5"/>
+  <polygon points="720,240 706,231 706,249" fill="#94a3b8"/>
+  <text x="563" y="214" font-size="18" fill="#fcd34d">0件のとき</text>
+  <rect x="722" y="200" width="438" height="84" rx="12" fill="none" stroke="#64748b" stroke-width="2"/>
+  <text x="740" y="234" font-size="18" fill="#e2e8f0">回答のAPIを呼ばずに固定の文を返す</text>
+  <text x="740" y="264" font-size="16" fill="#94a3b8">①のEmbedding APIは呼んでいる（98〜104行）</text>
+</svg>
