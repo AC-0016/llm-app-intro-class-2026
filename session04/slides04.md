@@ -379,7 +379,7 @@ def build_context(documents):
 
 # 休憩
 
-**17分、休憩します。**
+**6限は 18:20 から始めます。**
 
 後半は、指示文（`INSTRUCTIONS`）の設計と、回答の照合です。
 
