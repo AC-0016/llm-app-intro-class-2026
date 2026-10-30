@@ -397,7 +397,7 @@ get_tasks('progress.db', 'x')      # ValueError: status は all・todo・done �
 
 # 休憩
 
-**20分、休憩します。**
+**6限は 18:20 から始めます。**
 
 後半は、LLMとのやり取り（`ask_with_tools()`）と、実行前の検証です。
 
