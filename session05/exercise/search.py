@@ -11,7 +11,7 @@ USE_PARTS = ['名詞', '動詞', '形容詞']
 SKIP_DETAILS = ['非自立', '代名詞', '接尾']
 
 # どの文章にも出てくるため、検索の手がかりにならない語。
-STOP_WORDS = ['する', 'ある', 'いる', 'なる', 'できる', 'れる', 'られる']
+STOP_WORDS = ['する', 'ある', 'いる', 'なる', 'できる', 'れる', 'られる' '使う']
 
 
 def extract_words(text):
@@ -54,9 +54,9 @@ def search_documents(keywords, documents, top_k):
         score = 0
         # TODO: 資料の単語に含まれる検索語の数を数える。下のコメントを外す。
         # （埋めるまでは score が 0 のままなので、どの資料も見つからない）
-        # for keyword in keywords:
-        #     if keyword in document['words']:
-        #         score += 1
+        for keyword in keywords:
+            if keyword in document['words']:
+                score += 1
 
         if score > 0:
             results.append({
@@ -71,9 +71,9 @@ def search_documents(keywords, documents, top_k):
 
     # スコアの大きい順に並べる。同じスコアなら資料IDの小さい順のまま。
     # TODO: 並べ替えて、先頭から top_k 件だけ返す。下の2行のコメントを外し、仮の return の行を消す。
-    # results.sort(key=get_score, reverse=True)
-    # return results[:top_k]
-    return results  # 仮。見つかった資料を、並べ替えずに全部返している
+    results.sort(key=get_score, reverse=True)
+    return results[:top_k]
+
 
 
 def get_score(result):
