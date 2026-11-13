@@ -13,10 +13,10 @@ def cosine_similarity(a, b):
     b_length = 0.0  # b の長さの2乗
     # TODO: 同じ位置の数どうしを掛けて足していく。下のコメントを外す。
     # （埋めるまでは長さが0のままなので、類似度はいつも0になる）
-    # for i in range(len(a)):
-    #     dot += a[i] * b[i]
-    #     a_length += a[i] * a[i]
-    #     b_length += b[i] * b[i]
+    for i in range(len(a)):
+         dot += a[i] * b[i]
+         a_length += a[i] * a[i]
+         b_length += b[i] * b[i]
     if a_length == 0 or b_length == 0:
         return 0.0  # 長さ0のベクトルは向きが無いので、0とする
     return dot / (math.sqrt(a_length) * math.sqrt(b_length))
@@ -32,8 +32,8 @@ def search_documents(question_vector, documents, top_k, min_similarity):
     for document in documents:
         score = cosine_similarity(question_vector, document['vector'])
         # TODO: 類似度が min_similarity 以上の資料だけを残す。下のコメントを外し、仮の if の行を消す。
-        # if score >= min_similarity:
-        if score > 0:  # 仮。しきい値を使っていないので、関係の薄い資料も残る
+        if score >= min_similarity:
+
             results.append({
                 'id': document['id'],
                 'source': document['source'],
