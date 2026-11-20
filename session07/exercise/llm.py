@@ -85,18 +85,18 @@ def run_tool(name, arguments, database):
         raise ValueError('引数の形が正しくありません。')
 
     # TODO: 許可した関数名のときだけ、引数を確かめて実行する。下のコメントを外し、仮の raise の行を消す。
-    # if name == 'get_tasks':
-        # check_keys(args, ['status'])
-        # return get_tasks(database, args['status'])
-    # elif name == 'add_task':
-        # check_keys(args, ['task'])
-        # return add_task(database, args['task'])
-    # elif name == 'set_task_done':
-        # check_keys(args, ['task_id', 'done'])
-        # return set_task_done(database, args['task_id'], args['done'])
-    # else:
-        # raise ValueError('許可していない関数です。')
-    raise ValueError('TODO: llm.py の run_tool() で、関数の選び方を完成させる')
+    if name == 'get_tasks':
+        check_keys(args, ['status'])
+        return get_tasks(database, args['status'])
+    elif name == 'add_task':
+        check_keys(args, ['task'])
+        return add_task(database, args['task'])
+    elif name == 'set_task_done':
+        check_keys(args, ['task_id', 'done'])
+        return set_task_done(database, args['task_id'], args['done'])
+    else:
+        raise ValueError('許可していない関数です。')
+
 
 
 def check_keys(args, expected_keys):

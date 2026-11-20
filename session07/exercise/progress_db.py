@@ -38,15 +38,14 @@ def get_tasks(database, status):
     """
     # 実行するSQLは、この3つの決まった文だけ。LLMが作った文字列をSQLに入れない。
     # TODO: status に応じてSQLを選ぶ。下のコメントを外し、仮の raise の行を消す。
-    # if status == 'all':
-        # sql = 'SELECT id, task, done FROM tasks ORDER BY id'
-    # elif status == 'todo':
-        # sql = 'SELECT id, task, done FROM tasks WHERE done = 0 ORDER BY id'
-    # elif status == 'done':
-        # sql = 'SELECT id, task, done FROM tasks WHERE done = 1 ORDER BY id'
-    # else:
-        # raise ValueError('status は all・todo・done のどれかにしてください。')
-    raise ValueError('TODO: progress_db.py の get_tasks() で、SQLの選び方を完成させる')
+    if status == 'all':
+        sql = 'SELECT id, task, done FROM tasks ORDER BY id'
+    elif status == 'todo':
+        sql = 'SELECT id, task, done FROM tasks WHERE done = 0 ORDER BY id'
+    elif status == 'done':
+        sql = 'SELECT id, task, done FROM tasks WHERE done = 1 ORDER BY id'
+    else:
+        raise ValueError('status は all・todo・done のどれかにしてください。')
 
     conn = sqlite3.connect(database)
     cursor = conn.cursor()
